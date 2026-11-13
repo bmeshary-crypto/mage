@@ -1257,9 +1257,11 @@ function renderGpsBox(){
     const on=nativeSt&&nativeSt.on,code=nativeSt?nativeSt.code:'……',ph=nativeSt&&nativeSt.ph;
     box.innerHTML=`<div class="gpsCard"><p>هذا الهاتف يرسل موقعه وسرعته إلى شاشة السيارة، ويستقبل منها طلبات الاتصال والرسائل. اكتب هذا الرمز مرة واحدة في إعدادات الواجهة داخل متصفح السيارة:</p>
       <div class="code">${esc(code)}</div><div class="tog ${on?'on':''}" id="tNat"><span>${on?'الربط مع السيارة يعمل':'تشغيل الربط مع السيارة'}</span><span class="k"></span></div>
-      <div class="tog ${ph?'on':''}" id="tPh" style="margin-top:12px"><span>${ph?'الاتصال والرسائل مفعّلة':'السماح بالاتصال والرسائل وجهات الاتصال'}</span><span class="k"></span></div></div>`;
+      <div class="tog ${ph?'on':''}" id="tPh" style="margin-top:12px"><span>${ph?'الاتصال والرسائل مفعّلة':'السماح بالاتصال والرسائل وجهات الاتصال'}</span><span class="k"></span></div>
+      <div class="tog ${nativeSt&&nativeSt.auto?'on':''}" id="tAuto" style="margin-top:12px"><span>فتح الواجهة تلقائياً عند تشغيل الشاشة (لشاشة السيارة)</span><span class="k"></span></div></div>`;
     $('tNat').onclick=()=>{MageNative.postMessage(on?'stop':'start');setTimeout(()=>MageNative.postMessage('status'),1500)};
     $('tPh').onclick=()=>{MageNative.postMessage('perm-phone');setTimeout(()=>MageNative.postMessage('status'),4000)};
+    $('tAuto').onclick=()=>{MageNative.postMessage(nativeSt&&nativeSt.auto?'autostart:off':'autostart:on');setTimeout(()=>MageNative.postMessage('status'),800)};
   }else{
     box.innerHTML=`<div class="gpsCard"><p>افتح تطبيق MAGE Sport على هاتفك ← الإعدادات ← شغّل الربط مع السيارة، ثم اكتب الرمز الظاهر هنا:</p>
       <div class="gpsRow"><input id="iGps" maxlength="16" placeholder="الرمز" value="${esc(cfg.gps||'')}"><button class="btnA press" id="gpsGo">ربط</button></div></div>`;
