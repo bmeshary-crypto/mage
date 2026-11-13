@@ -486,14 +486,14 @@ body.navOn .nSpd{bottom:200px}
 .phHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.phHead b{font-size:44px;font-weight:900}
 .phHead .nrX{width:84px;height:72px;font-size:34px}
 .phBody{flex:1;min-height:0;display:flex;flex-direction:column;gap:18px}
-.dNum{height:120px;display:flex;align-items:center;justify-content:center;font-size:72px;letter-spacing:4px;background:var(--s2);border:1px solid var(--line);direction:ltr}
+.dNum{height:90px;display:flex;align-items:center;justify-content:center;font-size:54px;letter-spacing:3px;background:var(--s2);border:1px solid var(--line);direction:ltr}
 .dNum span{font-size:30px;color:var(--mu);letter-spacing:0;font-family:Tajawal}
-.dPad{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;direction:ltr}
-.dKey{background:var(--s2);border:1px solid var(--line);font-size:64px;font-weight:700;min-height:90px}
+.dPad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;direction:ltr}
+.dKey{background:var(--s2);border:1px solid var(--line);font-size:46px;font-weight:700;height:78px}
 .dKey:active{background:var(--acc);color:#000}
-.dRow{display:grid;grid-template-columns:1fr 2fr 1fr;gap:14px;direction:ltr}
-.dDel{background:var(--s3);font-size:44px;height:120px;display:grid;place-items:center}.dDel svg{width:52px;height:52px}
-.dCall{height:120px;background:#1fbf5b;color:#fff;font-size:38px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:16px}
+.dRow{display:grid;grid-template-columns:1fr 2fr 1fr;gap:10px;direction:ltr}
+.dDel{background:var(--s3);font-size:36px;height:86px;display:grid;place-items:center}.dDel svg{width:52px;height:52px}
+.dCall{height:86px;background:#1fbf5b;color:#fff;font-size:32px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:16px}
 .dCall svg{width:52px;height:52px}
 .bTop,.sTo{display:flex;gap:12px;align-items:center}
 .bTop input,.sTo input{flex:1;min-width:0;height:84px;padding:0 24px;font:800 30px Tajawal;color:var(--tx);background:var(--s2);border:2px solid var(--line);outline:none}
@@ -557,6 +557,30 @@ body.mpOn #p-nav{padding-bottom:0}
 body.mpOn #p-nav .nSheet,body.mpOn #p-nav .nWarn{bottom:160px}
 body.mpOn #p-nav .nSpd{bottom:160px}
 body.mpOn.navOn #p-nav .nSpd,body.mpOn.navOn #p-nav .nRoad{bottom:330px}
+
+/* ===== built-in keyboard ===== */
+.vkb{position:absolute;right:0;left:0;bottom:172px;z-index:5000;display:none;flex-direction:column;gap:8px;padding:10px 12px 14px;background:#0a0b0e;border-top:3px solid var(--acc);box-shadow:0 -20px 60px rgba(0,0,0,.7);direction:ltr}
+.tight .vkb{bottom:140px}
+.vkb.on{display:flex;animation:rise .25s var(--ease) both}
+.kbHead{display:flex;justify-content:space-between;align-items:center;direction:rtl;padding:0 6px}
+.kbHead span{font-size:20px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kbX{height:54px;padding:0 24px;font-size:22px;font-weight:900;background:var(--s3);border-radius:10px}
+.kr{display:flex;gap:7px;justify-content:center}
+.kk{flex:1;max-width:96px;height:78px;border-radius:12px;background:#24262d;color:#fff;font:700 32px Tajawal;display:grid;place-items:center;border-bottom:3px solid #000}
+.kk:active{background:var(--acc);color:#000}
+.kk.fn{max-width:130px;background:#33363f;font-size:24px}.kk.fn.on{background:var(--acc);color:#000}
+.kk.sp{flex:4;max-width:none;font-size:22px;color:var(--mu)}
+.kk.go{flex:2;max-width:none;background:var(--acc);color:#000;font-size:26px;font-weight:900}
+.kbT{border-color:var(--acc)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 40%,transparent)!important}
+body.kbOn .page.on{padding-bottom:520px}
+body.kbOn #p-nav.on{padding-bottom:0}
+body.kbOn .mp{display:none}
+input[readonly][data-kb]{cursor:text}
+/* dial pad compact */
+.phBody.dial{max-width:720px;width:100%;margin:0 auto}
+.waBox{max-width:760px;margin:20px auto;text-align:center;display:flex;flex-direction:column;gap:18px;font-size:28px;line-height:1.6}
+.waIc{width:120px;height:120px;margin:0 auto;border-radius:30px;background:#25a244;color:#fff;display:grid;place-items:center}.waIc svg{width:70px;height:70px}
+.waBox .btnG{height:80px;display:flex;align-items:center;justify-content:center;font-size:24px}
 </style>
 </head>
 <body>
@@ -566,6 +590,8 @@ body.mpOn.navOn #p-nav .nSpd,body.mpOn.navOn #p-nav .nRoad{bottom:330px}
   <div class="mp" id="mp"><div class="mpVid"><div id="mpYt"></div><div class="mpArt" id="mpArt"></div></div>
     <button class="mpInfo" id="mpInfo"><b id="mpT"></b><small id="mpS"></small></button>
     <button class="mpB press" id="mpPrev"></button><button class="mpB big press" id="mpPlay"></button><button class="mpB press" id="mpNext"></button><button class="mpB x press" id="mpX">✕</button></div>
+
+  <div class="vkb" id="vkb"></div>
 
   <!-- ============ DOCK ============ -->
   <nav class="dock" id="dock">
@@ -738,7 +764,7 @@ body.mpOn.navOn #p-nav .nSpd,body.mpOn.navOn #p-nav .nRoad{bottom:330px}
       <div class="page" id="p-phone">
         <h1 class="st" style="--i:0">الاتصال والرسائل</h1>
         <div class="grid g4" id="comms" style="margin-bottom:22px">
-          <a class="card tile rp press st sm" style="--i:1;--c:#25a244" href="https://web.whatsapp.com" target="_blank" rel="noopener"><span class="ic" data-ico="wa"></span><span><div class="t">واتساب</div><div class="s">واتساب ويب</div></span></a>
+          <a class="card tile rp press st sm" style="--i:1;--c:#25a244" href="#" data-ph="wa"><span class="ic" data-ico="wa"></span><span><div class="t">واتساب</div><div class="s">واتساب ويب</div></span></a>
           <button class="card tile rp press st sm" style="--i:2;--c:#ff6a00" data-ph="dial"><span class="ic" data-ico="phone"></span><span><div class="t">لوحة الاتصال</div><div class="s">يتصل عبر هاتفك</div></span></button>
           <button class="card tile rp press st sm" style="--i:3;--c:#7c4dff" data-ph="book"><span class="ic" data-ico="user"></span><span><div class="t">جهات الاتصال</div><div class="s">من هاتفك</div></span></button>
           <button class="card tile rp press st sm" style="--i:4;--c:#2a8cff" data-ph="sms"><span class="ic" data-ico="sms"></span><span><div class="t">الرسائل</div><div class="s">ترسل من هاتفك</div></span></button>
@@ -791,7 +817,8 @@ body.mpOn.navOn #p-nav .nSpd,body.mpOn.navOn #p-nav .nRoad{bottom:330px}
           <div class="f st" style="--i:6"><label>&nbsp;</label><div class="tog" id="tDemo"><span>وضع العرض (عدّاد تجريبي)</span><span class="k"></span></div></div>
           <div class="f st" style="--i:7;grid-column:1/-1"><label>رفع الواجهة فوق شريط CarbitLink السفلي <span id="insetL"></span>: <b class="num" id="insetV"></b></label>
             <input type="range" id="iInset" min="0" max="25" step="1" class="rng"><small class="fNote" style="color:var(--mu)">حرّك المؤشر حتى يظهر شريط الأزرار السفلي كاملاً فوق أزرار CarbitLink — يُحفظ لكل وضع (عادي / ملء الشاشة) على حدة</small></div>
-          <div class="f st" style="--i:8"><label>&nbsp;</label><div class="tog" id="tCalm"><span>إيقاف الحركات (أداء أسرع)</span><span class="k"></span></div></div>
+          <div class="f st" style="--i:8"><label>&nbsp;</label><div class="tog" id="tVkb"><span>لوحة المفاتيح الداخلية (بدل لوحة الهاتف)</span><span class="k"></span></div></div>
+          <div class="f st" style="--i:9"><label>&nbsp;</label><div class="tog" id="tCalm"><span>إيقاف الحركات (أداء أسرع)</span><span class="k"></span></div></div>
           <div class="f st" style="--i:8"><label>&nbsp;</label><div style="display:flex;gap:16px"><button class="btnA press" id="saveB" style="flex:1">حفظ</button><button class="btnG press" id="fsB">ملء الشاشة</button></div></div>
         </div>
       </div>
@@ -1202,7 +1229,7 @@ function openPh(m,extra){PH.mode=m;if(extra)Object.assign(PH,extra);$('phPanel')
   if(m==='book'&&!PH.book.length)loadBook()}
 function closePh(){PH.mode=null;$('phPanel').classList.remove('on')}
 const KEYS=['1','2','3','4','5','6','7','8','9','*','0','#'];
-function renderPh(){const el=$('phBody'),m=PH.mode;
+function renderPh(){const el=$('phBody'),m=PH.mode;el.classList.toggle('dial',m==='dial');
   $('phTitle').textContent={dial:'لوحة الاتصال',book:'جهات اتصال الهاتف',sms:'رسالة جديدة'}[m]||'';
   if(m==='dial'){el.innerHTML=`<div class="dNum num" id="dNum">${esc(PH.num)||'<span>اكتب الرقم</span>'}</div>
       <div class="dPad">${KEYS.map(k=>`<button class="dKey press num" data-k="${k}">${k}</button>`).join('')}</div>
@@ -1225,6 +1252,8 @@ document.addEventListener('click',async e=>{
   const k=e.target.closest('[data-k]');if(k){PH.num=k.dataset.k==='del'?PH.num.slice(0,-1):(PH.num+k.dataset.k).slice(0,18);renderPh();return}
   const qt=e.target.closest('[data-qt]');if(qt){$('sBody').value=qt.dataset.qt;return}
   const p=e.target.closest('[data-ph]');if(!p)return;const a=p.dataset.ph;
+  if(a==='wa'){e.preventDefault();PH.mode='wa';$('phPanel').classList.add('on');$('phTitle').textContent='واتساب';$('phBody').classList.remove('dial');
+    $('phBody').innerHTML=`<div class="waBox"><div class="waIc">${svg(I.wa)}</div><p>واتساب يمنع فتح موقعه داخل أي صفحة أخرى (حماية من الشركة نفسها)، فلا يمكن عرضه داخل الواجهة.</p><p>للتواصل وأنت في الواجهة استخدم <b>الاتصال</b> و<b>الرسائل</b> — تعمل عبر هاتفك دون مغادرة الصفحة.</p><a class="btnG press" href="https://web.whatsapp.com">فتح واتساب ويب (يغادر الواجهة)</a></div>`;return}
   if(a==='close')closePh();else if(a==='reload'){PH.book=[];renderPh();loadBook()}
   else if(a==='send'){const ok=await sendSms($('sNum').value,$('sBody').value);if(ok)closePh()}
   else openPh(a,a==='sms'?{to:null}:null)});
@@ -1234,7 +1263,7 @@ document.addEventListener('click',async e=>{
    Location: phone GPS bridge → browser geolocation → manual "أنا هنا".
    Search: Photon + Nominatim · Nearby: Overpass · Routing: OSRM (two public servers). */
 const NAV={map:null,hmap:null,me:null,hme:null,destM:null,hdestM:null,dest:null,route:null,pts:[],steps:[],si:1,active:false,follow:true,
-  voice:S.get('navVoice',true),mode:S.get('navMode','auto'),off:0,lastRoute:0,pos:null,hdg:0,kmh:0,pickMe:false,res:[],spoke:{},road:''};
+  voice:S.get('navVoice',true),headUp:S.get('navHeadUp',true),mode:S.get('navMode','auto'),off:0,lastRoute:0,pos:null,hdg:0,kmh:0,pickMe:false,res:[],spoke:{},road:''};
 const TILE_SAT='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
 const STY={day:'https://tiles.openfreemap.org/styles/liberty',night:'https://tiles.openfreemap.org/styles/dark'};
 const MODES=[['auto','تلقائي'],['day','نهاري'],['night','ليلي'],['sat','قمر صناعي']];
@@ -1308,9 +1337,11 @@ async function heroMapShow(){
 setInterval(()=>{if(NAV.mode!=='auto')return;const want=styleFor();[NAV.map,NAV.hmap].forEach(m=>{if(m&&m._lastSty!==want){m._lastSty=want;m.setStyle(want)}})},60000);
 
 /* ---------- position & camera ---------- */
-function camFor(p,m,mini){
-  if(NAV.active&&NAV.follow){const z=NAV.kmh>90?16:NAV.kmh>55?16.6:17.3,h=m.getContainer().clientHeight;
+function camFor(p,m,mini){const h=m.getContainer().clientHeight;
+  if(NAV.active&&NAV.follow){const z=NAV.kmh>90?16:NAV.kmh>55?16.6:17.3;
     return{center:[p.lng,p.lat],bearing:NAV.hdg,pitch:mini?45:58,zoom:mini?z-.6:z,padding:{top:h*(mini?.25:.42),bottom:0,left:0,right:0}}}
+  if(NAV.follow&&NAV.headUp)   // free drive: map turns with the car, arrow always points forward
+    return{center:[p.lng,p.lat],bearing:NAV.hdg,pitch:mini?30:45,padding:{top:h*(mini?.15:.3),bottom:0,left:0,right:0}};
   return{center:[p.lng,p.lat],bearing:0,pitch:0,padding:{top:0,bottom:0,left:0,right:0}}}
 function drawMe(force){const p=navPos();if(!p||!window.maplibregl)return;
   [['map','me'],['hmap','hme']].forEach(([mk,k])=>{const m=NAV[mk];if(!m)return;
@@ -1332,15 +1363,20 @@ function setManual(ll){NAV.pickMe=false;$('nMe').classList.remove('hot');NAV.pos
 
 /* ---------- data sources ---------- */
 async function navJ(u,ms=10000){const c=new AbortController(),t=setTimeout(()=>c.abort(),ms);try{const r=await fetch(u,{signal:c.signal});if(!r.ok)throw new Error(r.status);return await r.json()}finally{clearTimeout(t)}}
-async function geoSearch(q){const p=biasP(),out=[],seen=new Set();
-  const add=r=>{const k=r.n+'|'+r.lat.toFixed(4);if(!seen.has(k)&&isFinite(r.lat)){seen.add(k);r.d=hav(p,r);out.push(r)}};
-  await Promise.allSettled([
-    navJ(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&lat=${p.lat}&lon=${p.lng}&limit=12`).then(j=>j.features.forEach(f=>{const r=f.properties,[lng,lat]=f.geometry.coordinates;
-      add({lat,lng,n:r.name||r.street||q,a:[r.street,r.district,r.city].filter((v,i,a)=>v&&v!==r.name&&a.indexOf(v)===i).join('، ')})})),
-    navJ(`https://nominatim.openstreetmap.org/search?format=jsonv2&accept-language=ar&limit=8&q=${encodeURIComponent(q)}&viewbox=${p.lng-.7},${p.lat+.7},${p.lng+.7},${p.lat-.7}`).then(j=>j.forEach(r=>{const parts=r.display_name.split(/,\s*/);
-      add({lat:+r.lat,lng:+r.lon,n:r.name||parts[0],a:parts.slice(1,4).join('، ')})}))
-  ]);
-  return out.sort((a,b)=>a.d-b.d).slice(0,15)}
+async function geoSearch(q){const p=biasP(),out=[],seen=new Set(),e=encodeURIComponent(q);
+  const add=r=>{if(!isFinite(r.lat)||!isFinite(r.lng))return;const k=r.n+'|'+r.lat.toFixed(3)+','+r.lng.toFixed(3);if(!seen.has(k)){seen.add(k);r.d=hav(p,r);out.push(r)}};
+  const nom=(w,bounded)=>navJ(`https://nominatim.openstreetmap.org/search?format=jsonv2&accept-language=ar&limit=15&q=${e}&viewbox=${p.lng-w},${p.lat+w},${p.lng+w},${p.lat-w}&bounded=${bounded}`,9000)
+    .then(j=>j.forEach(r=>{const parts=r.display_name.split(/,\s*/);add({lat:+r.lat,lng:+r.lon,n:r.name||parts[0],a:parts.slice(1,4).join('، ')})}));
+  const pho=extra=>navJ(`https://photon.komoot.io/api/?q=${e}&lat=${p.lat}&lon=${p.lng}&limit=15&location_bias_scale=0.1&zoom=13${extra}`,9000)
+    .then(j=>j.features.forEach(f=>{const r=f.properties,[lng,lat]=f.geometry.coordinates;add({lat,lng,n:r.name||r.street||q,a:[r.street,r.district,r.city].filter((v,i,a)=>v&&v!==r.name&&a.indexOf(v)===i).join('، ')})}));
+  // shops / restaurants by name right around you (OpenStreetMap), like Google's "near me"
+  const rq=q.replace(/[.*+?^${}()|[\]\\"]/g,'\\$&');
+  const ovp=()=>navJ('https://overpass-api.de/api/interpreter?data='+encodeURIComponent(`[out:json][timeout:9];(nwr["name"~"${rq}",i](around:20000,${p.lat},${p.lng});nwr["name:ar"~"${rq}",i](around:20000,${p.lat},${p.lng});nwr["brand"~"${rq}",i](around:20000,${p.lat},${p.lng}););out center 40;`),10000)
+    .then(j=>j.elements.forEach(x=>{const t=x.tags||{};add({lat:x.lat??(x.center&&x.center.lat),lng:x.lon??(x.center&&x.center.lon),n:t['name:ar']||t.name||q,a:[t['addr:street'],t['addr:district']||t['addr:suburb'],t.amenity||t.shop||''].filter(Boolean).join('، ')})}));
+  const L=.35;   // ≈ 35 km around you first
+  await Promise.allSettled([nom(L,1),pho(`&bbox=${p.lng-L},${p.lat-L},${p.lng+L},${p.lat+L}`),ovp()]);
+  if(!out.length)await Promise.allSettled([nom(4,0),pho("")]);   // nothing close → search wider
+  return out.sort((a,b)=>a.d-b.d).slice(0,20)}
 const CATS={fuel:['محطة وقود','["amenity"="fuel"]'],mosque:['مسجد','["amenity"="place_of_worship"]["religion"="muslim"]'],coffee:['مقهى','["amenity"="cafe"]'],
   food:['مطعم','["amenity"~"^(restaurant|fast_food)$"]'],park:['موقف سيارات','["amenity"="parking"]'],wash:['مغسلة سيارات','["amenity"="car_wash"]']};
 async function nearby(k){const p=biasP(),q=`[out:json][timeout:20];nwr${CATS[k][1]}(around:6000,${p.lat},${p.lng});out center 60;`;
@@ -1483,7 +1519,7 @@ async function saveHere(k){const p=navPos();if(!p){toast('موقعك غير مع
 /* ---------- wiring ---------- */
 $('navForm').addEventListener('submit',e=>{e.preventDefault();const q=$('navQ').value.trim();if(!q){toast('اكتب الوجهة أولاً');return}$('navQ').blur();runSearch(q)});
 $('mapGo').onclick=()=>go('nav');
-$('nRec').onclick=()=>{NAV.follow=true;$('nRec').classList.remove('hot');if(navPos())drawMe();else startPickMe()};
+$('nRec').onclick=()=>{if(NAV.follow&&!NAV.active){NAV.headUp=!NAV.headUp;S.set('navHeadUp',NAV.headUp);toast(NAV.headUp?'الخريطة تدور مع اتجاه السيارة':'الشمال للأعلى')}NAV.follow=true;$('nRec').classList.remove('hot');if(navPos())drawMe();else startPickMe()};
 $('nMe').onclick=()=>NAV.pickMe?(NAV.pickMe=false,$('nMe').classList.remove('hot'),updWarn()):startPickMe();
 $('nWarnB').onclick=startPickMe;
 $('nLay').onclick=()=>{const i=MODES.findIndex(x=>x[0]===NAV.mode);const md=MODES[(i+1)%MODES.length][0];setMode(md);toast('الخريطة: '+MODES.find(x=>x[0]===md)[1])};
@@ -1610,6 +1646,51 @@ $('mpPlay').onclick=mpToggle;$('mpNext').onclick=mpNext;$('mpPrev').onclick=mpPr
 $('mpInfo').onclick=()=>openMedia(MP.kind==='yt'?'music':MP.kind||'music');
 setInterval(()=>{$('mp').classList.toggle('moving',(NAV.kmh||0)>=15)},1500);
 
+/* ================= built-in on-screen keyboard =================
+   CarbitLink sends every text field to the phone for typing. Inputs here are made read-only for the
+   system and typed into with this keyboard instead (Arabic / English / numbers), so typing stays on the car screen. */
+const KB={t:null,lang:S.get('kbLang','ar'),mode:'abc',shift:false};
+const KB_L={
+  ar:['ض ص ث ق ف غ ع ه خ ح ج د','ش س ي ب ل ا ت ن م ك ط','ئ ء ؤ ر ى ة و ز ظ ذ أ إ'],
+  en:['q w e r t y u i o p','a s d f g h j k l','z x c v b n m'],
+  num:['1 2 3 4 5 6 7 8 9 0','- / : ; ( ) ـ @ + آ','. ، ؟ ! ٪ # " \' _ *']};
+const kbOn=()=>!window.MageNative&&cfg.vkb!==false;
+const kbField=el=>el&&((el.tagName==='INPUT'&&/^(text|search|tel|url|email|)$/.test(el.type||''))||el.tagName==='TEXTAREA')&&!el.closest('#vkb');
+function kbPrep(root){if(!kbOn())return;(root||document).querySelectorAll('input,textarea').forEach(el=>{if(kbField(el)&&!el.dataset.kb){el.dataset.kb=1;el.readOnly=true;el.setAttribute('inputmode','none')}})}
+function kbRender(){const k=$('vkb');if(!k)return;const L=KB.mode==='num'?KB_L.num:KB_L[KB.lang];
+  const key=c=>{const v=KB.shift&&KB.lang==='en'&&KB.mode!=='num'?c.toUpperCase():c;return `<button class="kk" data-kk="${esc(v)}">${esc(v)}</button>`};
+  k.innerHTML=`<div class="kbHead"><span id="kbPrev">${esc(KB.t?KB.t.placeholder||'':'')}</span><button class="kbX" data-kc="hide">إخفاء ⌄</button></div>`+
+    L.map((r,i)=>`<div class="kr">${i===2&&KB.lang==='en'&&KB.mode!=='num'?`<button class="kk fn ${KB.shift?'on':''}" data-kc="shift">⇧</button>`:''}${r.split(' ').map(key).join('')}${i===2?'<button class="kk fn" data-kc="del">⌫</button>':''}</div>`).join('')+
+    `<div class="kr"><button class="kk fn" data-kc="mode">${KB.mode==='num'?(KB.lang==='ar'?'أ ب ت':'ABC'):'123'}</button><button class="kk fn" data-kc="lang">${KB.lang==='ar'?'EN':'ع'}</button>
+     <button class="kk sp" data-kk=" ">${KB.lang==='ar'?'مسافة':'space'}</button><button class="kk fn" data-kc="clear">مسح</button><button class="kk go" data-kc="enter">${KB.t&&KB.t.tagName==='TEXTAREA'?'سطر جديد':'بحث ⏎'}</button></div>`}
+function kbOpen(el){if(!kbOn())return;KB.t=el;KB.mode=el.type==='tel'||el.inputMode==='tel'||el.getAttribute('inputmode')==='tel'||el.classList.contains('num')?'num':'abc';KB.shift=false;
+  kbRender();$('vkb').classList.add('on');document.body.classList.add('kbOn');document.querySelectorAll('.kbT').forEach(x=>x.classList.remove('kbT'));el.classList.add('kbT');
+  setTimeout(()=>{const r=el.getBoundingClientRect(),kr=$('vkb').getBoundingClientRect();if(r.bottom>kr.top-10)el.scrollIntoView({block:'center',behavior:'smooth'})},60)}
+function kbClose(){$('vkb').classList.remove('on');document.body.classList.remove('kbOn');if(KB.t){KB.t.classList.remove('kbT');KB.t.blur()}KB.t=null}
+function kbTarget(){if(KB.t&&document.contains(KB.t))return KB.t;const a=document.activeElement;if(kbField(a)){KB.t=a;return a}return null}
+function kbPut(fn){const el=kbTarget();if(!el)return;el.value=fn(el.value);el.dispatchEvent(new Event('input',{bubbles:true}));
+  const t=kbTarget();if(t){t.scrollLeft=t.scrollWidth;t.classList.add('kbT')}}
+document.addEventListener('focusin',e=>{if(kbField(e.target)&&kbOn()){if(!e.target.dataset.kb)kbPrep(e.target.parentNode);kbOpen(e.target)}});
+document.addEventListener('pointerdown',e=>{const t=e.target;
+  if(t.closest('#vkb')){e.preventDefault();return}            // keep focus on the field
+  if(kbField(t)&&kbOn()){if(!t.dataset.kb)kbPrep(t.parentNode);if(document.activeElement===t)kbOpen(t);return}
+  if($('vkb').classList.contains('on')&&!t.closest('.kbKeep'))kbClose()},true);
+document.addEventListener('click',e=>{const b=e.target.closest('#vkb [data-kk],#vkb [data-kc]');if(!b)return;
+  if(b.dataset.kk!==undefined){kbPut(v=>v+b.dataset.kk);if(KB.shift){KB.shift=false;kbRender()}return}
+  const c=b.dataset.kc,el=kbTarget();
+  if(c==='del')kbPut(v=>v.slice(0,-1));else if(c==='clear')kbPut(()=>'');
+  else if(c==='shift'){KB.shift=!KB.shift;kbRender()}
+  else if(c==='mode'){KB.mode=KB.mode==='num'?'abc':'num';kbRender()}
+  else if(c==='lang'){KB.lang=KB.lang==='ar'?'en':'ar';KB.mode='abc';S.set('kbLang',KB.lang);kbRender()}
+  else if(c==='hide')kbClose();
+  else if(c==='enter'&&el){if(el.tagName==='TEXTAREA'){kbPut(v=>v+'\n');return}
+    const f=el.form;kbClose();if(f){f.requestSubmit?f.requestSubmit():f.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true}))}else el.dispatchEvent(new Event('change',{bubbles:true}))}});
+// long-press backspace keeps deleting
+let kbRep=null;document.addEventListener('pointerdown',e=>{if(e.target.closest('#vkb [data-kc="del"]')){clearInterval(kbRep);kbRep=setTimeout(()=>{kbRep=setInterval(()=>kbPut(v=>v.slice(0,-1)),90)},450)}});
+['pointerup','pointercancel'].forEach(t=>document.addEventListener(t,()=>{clearTimeout(kbRep);clearInterval(kbRep)}));
+new MutationObserver(m=>{if(kbOn())m.forEach(r=>r.addedNodes.forEach(n=>{if(n.nodeType===1)kbPrep(n)}))}).observe(document.body,{childList:true,subtree:true});
+kbPrep();
+
 /* ================= page routing + animations ================= */
 const order=['home','nav','media','phone','pray','set'];let cur=null;
 function go(p,instant){
@@ -1653,6 +1734,7 @@ $('thChip').onclick=()=>{const i=LAYS.findIndex(l=>l.k===cfg.layout);cfg.layout=
   if(cur!=='home')go('home');applyLayout(true);const sw=$('sweep');sw.classList.remove('go');void sw.offsetWidth;sw.classList.add('go')};
 $('tDemo').onclick=()=>{cfg.demo=!cfg.demo;$('tDemo').classList.toggle('on',cfg.demo);if(!cfg.demo){setSpeed(0);$('gpsHint').textContent='السرعة من GPS الهاتف'}};
 $('iInset').oninput=e=>{const v=+e.target.value;if(isFs())cfg.insetFs=v;else cfg.insetN=v;S.set('cfg',cfg);$('insetV').textContent=v+'%';fit()};
+$('tVkb').classList.toggle('on',cfg.vkb!==false);$('tVkb').onclick=()=>{cfg.vkb=cfg.vkb===false;S.set('cfg',cfg);toast('جارٍ إعادة التحميل…');setTimeout(()=>location.reload(),600)};
 $('tCalm').onclick=()=>{cfg.calm=!cfg.calm;$('tCalm').classList.toggle('on',cfg.calm);applyAcc()};
 $('saveB').onclick=()=>{
   if($('iHome').value.trim()!==cfg.home)delete cfg.homeLL;if($('iWork').value.trim()!==cfg.work)delete cfg.workLL;
