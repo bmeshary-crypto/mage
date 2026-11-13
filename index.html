@@ -8,6 +8,16 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>MAGE Sport — واجهة السيارة</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="preconnect" href="https://i.ytimg.com">
+<link rel="preconnect" href="https://api.piped.private.coffee" crossorigin>
+<link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin>
+<link rel="dns-prefetch" href="https://www.youtube-nocookie.com">
+<link rel="dns-prefetch" href="https://photon.komoot.io">
+<link rel="dns-prefetch" href="https://nominatim.openstreetmap.org">
+<link rel="dns-prefetch" href="https://router.project-osrm.org">
+<link rel="dns-prefetch" href="https://broker.hivemq.com">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 /* =========================================================
@@ -598,13 +608,26 @@ input[readonly][data-kb]{cursor:text}
 .voT{font-size:34px;font-weight:800;text-align:center;color:var(--mu);line-height:1.5;min-height:52px}
 .voT.heard{color:var(--tx);font-size:42px}
 .voB{display:flex;gap:14px}.voB button{height:80px;padding:0 34px;font-size:26px}
+
+/* ===== favourites & mixes ===== */
+.favRow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.favL{font-size:24px;font-weight:900;color:var(--acc);margin-inline-end:6px}
+.favC{height:68px;padding:0 24px;font-size:25px;font-weight:900;background:color-mix(in srgb,var(--acc) 16%,var(--s2));border:2px solid color-mix(in srgb,var(--acc) 50%,transparent);border-radius:40px}
+.favC.on{background:var(--acc);color:#000}
+.mixRow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mixB{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:20px 26px;text-align:right;background:linear-gradient(135deg,var(--acc),color-mix(in srgb,var(--acc) 55%,#000));color:#000;
+  clip-path:polygon(18px 0,100% 0,100% calc(100% - 18px),calc(100% - 18px) 100%,0 100%,0 18px)}
+.mixB.alt{background:linear-gradient(135deg,#2b2e37,#17181d);color:var(--tx);border:1px solid var(--line)}
+.mixB b{font-size:30px;font-weight:900}.mixB small{font-size:20px;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.mixB.on{outline:3px solid #fff}
+.mpBar{position:absolute;top:-4px;right:0;height:4px;width:0;background:#fff;transition:width 1s linear;z-index:2}
 </style>
 </head>
 <body>
 <div id="viewport"><div id="stage">
 
   <!-- ============ MINI PLAYER (stays on every page) ============ -->
-  <div class="mp" id="mp"><div class="mpVid"><div id="mpYt"></div><div class="mpArt" id="mpArt"></div></div>
+  <div class="mp" id="mp"><i class="mpBar" id="mpBar"></i><div class="mpVid"><div id="mpYt"></div><div class="mpArt" id="mpArt"></div></div>
     <button class="mpInfo" id="mpInfo"><b id="mpT"></b><small id="mpS"></small></button>
     <button class="mpB press" id="mpPrev"></button><button class="mpB big press" id="mpPlay"></button><button class="mpB press" id="mpNext"></button><button class="mpB x press" id="mpX">✕</button></div>
 
@@ -833,6 +856,7 @@ input[readonly][data-kb]{cursor:text}
             </select></div>
           <div class="f st" style="--i:3"><label>البيت</label><div class="fRow"><input id="iHome" placeholder="اسم الحي أو العنوان"><button class="btnG press" type="button" data-here="home">📍 موقعي الحالي</button></div><small class="fNote" id="hNote"></small></div>
           <div class="f st" style="--i:4"><label>العمل</label><div class="fRow"><input id="iWork" placeholder="مثال: جدة التاريخية"><button class="btnG press" type="button" data-here="work">📍 موقعي الحالي</button></div><small class="fNote" id="wNote"></small></div>
+          <div class="f st" style="--i:5;grid-column:1/-1"><label>الفنانون المفضّلون (افصل بينهم بفاصلة)</label><input id="iFav" placeholder="رامي جمال، رامي صبري، تامر عاشور، مهى فتوني"></div>
           <div class="f st" style="--i:5"><label>مفتاح YouTube API (اختياري · يجعل البحث أسرع وأثبت)</label><input id="iYt" placeholder="اتركه فارغاً لاستخدام البحث المفتوح" style="direction:ltr"></div>
           <div class="f st" style="--i:5"><label>GPS الهاتف ← شاشة السيارة</label><div id="gpsBox"></div></div>
           <div class="f st" style="--i:6"><label>&nbsp;</label><div class="tog" id="tDemo"><span>وضع العرض (عدّاد تجريبي)</span><span class="k"></span></div></div>
@@ -1129,10 +1153,7 @@ async function ytSearch(q){
   q=(q||'').trim();if(!q)return;const my=++ytSeq;$('ytQ').value=q;
   document.querySelectorAll('#ytChips button').forEach(b=>b.classList.toggle('on',b.textContent===q));
   $('ytList').innerHTML='<div class="ytMsg"><div class="spin"></div>جارٍ البحث…</div>';
-  for(const p of await ytProviders(q)){
-    try{const r=(await p()).filter(x=>x.id&&x.t);if(my!==ytSeq)return;if(r.length){ytRender(r);return}}catch(e){}
-  }
-  if(my!==ytSeq)return;
+  const rr=await ytRace(q);if(my!==ytSeq)return;if(rr&&rr.length){ytRender(rr);return}
   $('ytList').innerHTML=`<div class="ytMsg">تعذّر البحث الآن.<br>جرّب مرة أخرى، أو اضغط <b>يوتيوب الكامل</b>.<br><small>لبحث ثابت دائماً أضف مفتاح YouTube API من الإعدادات.</small></div>`;
 }
 function ytRender(r){
@@ -1567,10 +1588,16 @@ const SURAS='الفاتحة البقرة آل_عمران النساء المائ
 const RECITERS0=[['مشاري راشد العفاسي','https://server8.mp3quran.net/afs/'],['ماهر المعيقلي','https://server12.mp3quran.net/maher/'],['عبدالرحمن السديس','https://server11.mp3quran.net/sds/'],
   ['ياسر الدوسري','https://server11.mp3quran.net/yasser/'],['محمد صديق المنشاوي','https://server10.mp3quran.net/minsh/'],['محمود خليل الحصري','https://server13.mp3quran.net/husr/'],
   ['أحمد العجمي','https://server10.mp3quran.net/ajm/'],['فارس عباد','https://server8.mp3quran.net/frs_a/']].map(([n,s])=>({n,s,l:null}));
+const FAV0=['رامي جمال','رامي صبري','تامر عاشور','مهى فتوني'];
+const favs=()=>(cfg.favArtists&&cfg.favArtists.length?cfg.favArtists:FAV0);
+// artists with the same feel (Egyptian / Arabic romantic pop) for the «مشابه» mix
+const SIMILAR={'رامي جمال':['محمد حماقي','تامر حسني','أحمد جمال'],'رامي صبري':['بهاء سلطان','محمد فؤاد','رامي عياش'],'تامر عاشور':['حسين الجسمي','شيرين عبد الوهاب','أحمد سعد'],
+  'مهى فتوني':['أصالة','أنغام','إليسا']};
+const simOf=()=>{const out=[];favs().forEach(f=>(SIMILAR[f]||['محمد حماقي','أنغام']).forEach(x=>{if(!out.includes(x)&&!favs().includes(x))out.push(x)}));return out};
 const MU_CHIPS=['أجمل الأغاني العربية','محمد عبده','عبدالمجيد عبدالله','عمرو دياب','شيلات','أناشيد بدون موسيقى','بودكاست','Lo-fi'];
 I.play=I.play||'<path d="M7 4v16l13-8z" fill="currentColor" stroke="none"/>';I.pause=I.pause||'<path d="M7 4h4v16H7zM13 4h4v16h-4z" fill="currentColor" stroke="none"/>';
 I.next=I.next||'<path d="M5 4v16l10-8zM17 4h2v16h-2z" fill="currentColor" stroke="none"/>';I.prev=I.prev||'<path d="M19 4v16L9 12zM5 4h2v16H5z" fill="currentColor" stroke="none"/>';
-const MP={kind:null,list:[],i:-1,playing:false,yt:null,ytReady:null,au:new Audio(),tab:S.get('muTab','music'),rec:S.get('muRec',0),reciters:RECITERS0,radio:null};
+const MP={mix:{},kind:null,list:[],i:-1,playing:false,yt:null,ytReady:null,au:new Audio(),tab:S.get('muTab','music'),rec:S.get('muRec',0),reciters:RECITERS0,radio:null};
 MP.au.preload='none';
 function needYT(){if(MP.ytReady)return MP.ytReady;
   MP.ytReady=new Promise(ok=>{window.onYouTubeIframeAPIReady=()=>{
@@ -1605,10 +1632,13 @@ const _ytPlay=ytPlay;ytPlay=function(id,t){if(MP.kind)mpClose();return _ytPlay(i
 function openMedia(tab){if(tab)MP.tab=tab;S.set('muTab',MP.tab);go('media');renderMedia()}
 function renderMedia(){document.querySelectorAll('#muTabs button').forEach(b=>b.classList.toggle('on',b.dataset.mt===MP.tab));
   const box=$('muBody');
-  if(MP.tab==='music'){box.innerHTML=`<form class="muSearch" id="muForm" autocomplete="off"><input id="muQ" placeholder="ابحث عن أغنية، فنان، شيلة، نشيد…" value="${esc(MP.q||'')}"><button class="micB press" type="button" data-mic="muQ">${svg(I.mic)}</button><button class="btnA press" type="submit">بحث</button></form>
+  if(MP.tab==='music'){box.innerHTML=`<div class="favRow"><span class="favL">★ مفضّلتك</span>${favs().map(a=>`<button class="favC press" data-muq="${esc(a)}">${esc(a)}</button>`).join('')}</div>
+      <div class="mixRow"><button class="mixB press" data-mix="fav"><b>▶ مزيج مفضّلتي</b><small>أغاني ${esc(favs().slice(0,3).join('، '))}…</small></button>
+        <button class="mixB alt press" data-mix="sim"><b>▶ على نفس الرِتم</b><small>${esc(simOf().slice(0,3).join('، '))}…</small></button></div>
+      <form class="muSearch" id="muForm" autocomplete="off"><input id="muQ" placeholder="ابحث عن أغنية، فنان، شيلة، نشيد…" value="${esc(MP.q||'')}"><button class="micB press" type="button" data-mic="muQ">${svg(I.mic)}</button><button class="btnA press" type="submit">بحث</button></form>
       <div class="nChips">${MU_CHIPS.map(c=>`<button class="nChip press" data-muq="${esc(c)}">${esc(c)}</button>`).join('')}</div><div class="muList" id="muList"></div>`;
     $('muForm').onsubmit=e=>{e.preventDefault();$('muQ').blur();muSearch($('muQ').value)};
-    if(MP.music)renderMuList();else muSearch(MP.q||MU_CHIPS[0])}
+    if(MP.music)renderMuList();else buildMix('fav',false)}
   else if(MP.tab==='radio'){box.innerHTML=`<form class="muSearch" id="raForm" autocomplete="off"><input id="raQ" placeholder="ابحث عن إذاعة: قرآن، أخبار، MBC، روتانا…" value="${esc(MP.rq||'')}"><button class="micB press" type="button" data-mic="raQ">${svg(I.mic)}</button><button class="btnA press" type="submit">بحث</button></form>
       <div class="nChips">${['السعودية','القرآن الكريم','أخبار','مصر','الخليج','عربي'].map(c=>`<button class="nChip press" data-raq="${esc(c)}">${esc(c)}</button>`).join('')}</div><div class="muList" id="muList"></div>`;
     $('raForm').onsubmit=e=>{e.preventDefault();$('raQ').blur();raSearch($('raQ').value)};
@@ -1616,6 +1646,16 @@ function renderMedia(){document.querySelectorAll('#muTabs button').forEach(b=>b.
   else{const r=MP.reciters[MP.rec]||MP.reciters[0];
     box.innerHTML=`<div class="qrTop"><label>القارئ</label><select id="qrSel">${MP.reciters.map((x,i)=>`<option value="${i}" ${i===MP.rec?'selected':''}>${esc(x.n)}</option>`).join('')}</select></div><div class="muList qGrid" id="muList"></div>`;
     $('qrSel').onchange=e=>{MP.rec=+e.target.value;S.set('muRec',MP.rec);renderMuList()};renderMuList();loadReciters()}}
+// mix: a few songs from each artist, interleaved, no duplicates, no live streams / full albums
+async function buildMix(kind,play){const my=++muSeq;MP.q='';const qi=$('muQ');if(qi)qi.value='';MP.music=null;renderMuList();
+  document.querySelectorAll('[data-mix]').forEach(b=>b.classList.toggle('on',b.dataset.mix===kind));document.querySelectorAll('[data-muq]').forEach(b=>b.classList.remove('on'));
+  if(MP.mix[kind]&&Date.now()-MP.mix[kind].t<3600e3){MP.music=MP.mix[kind].l}
+  else{const names=kind==='fav'?favs():simOf();
+    const lists=await Promise.all(names.map(n=>ytRace(n+' أغاني').then(r=>(r||[]).filter(v=>!v.live&&(!v.d||(v.d>=110&&v.d<=540))&&!/مباشر|live|كامل|ألبوم|album|حفلة/i.test(v.t)).slice(0,6).map(v=>({id:v.id,t:v.t,s:v.c||n,art:`https://i.ytimg.com/vi/${v.id}/mqdefault.jpg`,d:fmtDur(v.d)}))).catch(()=>[])));
+    if(my!==muSeq)return;const seen=new Set(),out=[];
+    for(let i=0;i<6;i++)lists.forEach(l=>{const x=l[i];if(x&&!seen.has(x.id)){seen.add(x.id);out.push(x)}});
+    MP.music=out;if(out.length)MP.mix[kind]={t:Date.now(),l:out}}
+  if(my!==muSeq)return;renderMuList();if(play&&MP.music&&MP.music.length)mpPlayAt('yt',MP.music,0)}
 function curList(){return MP.tab==='music'?MP.music:MP.tab==='radio'?MP.radio:quranList()}
 function quranList(){const r=MP.reciters[MP.rec]||MP.reciters[0];if(MP._qr===r&&MP._ql)return MP._ql;const ok=r.l&&r.l.length?new Set(r.l):null;MP._qr=r;
   return MP._ql=SURAS.map((n,k)=>({t:'سورة '+n,s:r.n,u:r.s+String(k+1).padStart(3,'0')+'.mp3',k:k+1})).filter(x=>!ok||ok.has(x.k))}
@@ -1629,7 +1669,7 @@ function renderMuList(){const el=$('muList');if(!el||cur!=='media')return;const 
     <span class="muTx"><b>${esc(x.t)}</b><small>${esc(x.s||'')}</small></span><span class="muGo">${svg(same&&MP.i===i&&MP.playing?I.pause:I.play)}</span></button>`).join('')}
 let muSeq=0;
 async function muSearch(q){q=(q||'').trim();if(!q)return;MP.q=q;MP.music=null;renderMuList();const my=++muSeq;
-  document.querySelectorAll('[data-muq]').forEach(b=>b.classList.toggle('on',b.dataset.muq===q));
+  document.querySelectorAll('[data-muq]').forEach(b=>b.classList.toggle('on',b.dataset.muq===q));document.querySelectorAll('[data-mix]').forEach(b=>b.classList.remove('on'));
   const r=await ytRace(q);if(my!==muSeq)return;
   MP.music=(r||[]).filter(v=>!v.live).map(v=>({id:v.id,t:v.t,s:v.c||'',art:`https://i.ytimg.com/vi/${v.id}/mqdefault.jpg`,d:fmtDur(v.d)}));
   if(!r)$('muList')&&($('muList').innerHTML='<div class="nrMsg">تعذّر البحث الآن — حاول مرة أخرى بعد قليل</div>');else renderMuList()}
@@ -1653,7 +1693,11 @@ async function loadReciters(){if(recLoaded)return;recLoaded=true;
       MP.reciters=top.concat(list.filter(x=>!top.includes(x)));const k=MP.reciters.findIndex(x=>x.n===curN);MP.rec=k<0?0:k;if(MP.tab==='quran'&&cur==='media')renderMedia()}}
   catch(e){}}
 // race all YouTube search providers in parallel — first good answer wins (fast even when some servers are down)
-async function ytRace(q){const ps=(await ytProviders(q)).map(p=>p().then(r=>{r=(r||[]).filter(x=>x.id&&x.t);if(!r.length)throw 0;return r}));
+async function ytRace(q){const ck='ytc:'+q.trim().toLowerCase(),hit=YTC.get(ck)||S.get(ck,null);
+  if(hit&&Date.now()-hit.t<6*3600e3){YTC.set(ck,hit);return hit.r}
+  const r=await ytRace0(q);if(r&&r.length){const v={t:Date.now(),r:r.slice(0,30)};YTC.set(ck,v);try{S.set(ck,v);ytcTrim()}catch(e){}}return r}
+const YTC=new Map();function ytcTrim(){try{const k=Object.keys(localStorage).filter(x=>x.includes('ytc:'));if(k.length>60)k.slice(0,k.length-60).forEach(x=>localStorage.removeItem(x))}catch(e){}}
+async function ytRace0(q){const ps=(await ytProviders(q)).map(p=>p().then(r=>{r=(r||[]).filter(x=>x.id&&x.t);if(!r.length)throw 0;return r}));
   try{return await Promise.any(ps)}catch(e){return null}}
 
 document.addEventListener('click',e=>{
@@ -1662,11 +1706,15 @@ document.addEventListener('click',e=>{
   const rq=e.target.closest('[data-raq]');if(rq){$('raQ').value=rq.dataset.raq;raSearch(rq.dataset.raq);return}
   const mi=e.target.closest('[data-mi]');if(mi){const list=curList(),i=+mi.dataset.mi,kind=MP.tab==='music'?'yt':MP.tab;
     if(MP.kind===kind&&MP.list===list&&MP.i===i)mpToggle();else mpPlayAt(kind,list,i);return}
+  const mx=e.target.closest('[data-mix]');if(mx){buildMix(mx.dataset.mix,true);return}
   const om=e.target.closest('[data-media]');if(om){e.preventDefault();openMedia(om.dataset.media);return}});
 $('mpPrev').innerHTML=svg(I.prev);$('mpNext').innerHTML=svg(I.next);$('mpPlay').innerHTML=svg(I.play);
 $('mpPlay').onclick=mpToggle;$('mpNext').onclick=mpNext;$('mpPrev').onclick=mpPrev;$('mpX').onclick=mpClose;
 $('mpInfo').onclick=()=>openMedia(MP.kind==='yt'?'music':MP.kind||'music');
 setInterval(()=>{$('mp').classList.toggle('moving',(NAV.kmh||0)>=15)},1500);
+setInterval(()=>{if(!MP.kind||!MP.playing)return;let c=0,d=0;
+  try{if(MP.kind==='yt'&&MP.yt&&MP.yt.getCurrentTime){c=MP.yt.getCurrentTime();d=MP.yt.getDuration()}else{c=MP.au.currentTime;d=MP.au.duration}}catch(e){}
+  $('mpBar').style.width=(d>0&&isFinite(d)?Math.min(100,c/d*100):0)+'%'},1000);
 
 /* ================= built-in on-screen keyboard =================
    CarbitLink sends every text field to the phone for typing. Inputs here are made read-only for the
@@ -1781,7 +1829,7 @@ function applyAcc(){const r=document.documentElement.style;const P=PALS[cfg.pal]
   document.body.classList.toggle('calm',!!cfg.calm)}
 function fillForm(){
   $('iName').value=cfg.name;$('iCity').value=cfg.city;$('iHome').value=cfg.home;$('iWork').value=cfg.work;
-  $('iYt').value=cfg.ytKey||'';$('hNote').textContent=cfg.homeLL?'✓ موقع محفوظ بالضبط على الخريطة':'';$('wNote').textContent=cfg.workLL?'✓ موقع محفوظ بالضبط على الخريطة':'';renderPickers();renderGpsBox();
+  $('iYt').value=cfg.ytKey||'';$('iFav').value=favs().join('، ');$('hNote').textContent=cfg.homeLL?'✓ موقع محفوظ بالضبط على الخريطة':'';$('wNote').textContent=cfg.workLL?'✓ موقع محفوظ بالضبط على الخريطة':'';renderPickers();renderGpsBox();
   $('tDemo').classList.toggle('on',!!cfg.demo);$('tCalm').classList.toggle('on',!!cfg.calm);
 }
 document.addEventListener('click',e=>{
@@ -1794,6 +1842,7 @@ $('iInset').oninput=e=>{const v=+e.target.value;if(isFs())cfg.insetFs=v;else cfg
 $('tVkb').classList.toggle('on',cfg.vkb!==false);$('tVkb').onclick=()=>{cfg.vkb=cfg.vkb===false;S.set('cfg',cfg);toast('جارٍ إعادة التحميل…');setTimeout(()=>location.reload(),600)};
 $('tCalm').onclick=()=>{cfg.calm=!cfg.calm;$('tCalm').classList.toggle('on',cfg.calm);applyAcc()};
 $('saveB').onclick=()=>{
+  {const f=$('iFav').value.split(/[،,]/).map(x=>x.trim()).filter(Boolean);if(f.join()!==favs().join()){cfg.favArtists=f;MP.mix={};MP.music=null}}
   if($('iHome').value.trim()!==cfg.home)delete cfg.homeLL;if($('iWork').value.trim()!==cfg.work)delete cfg.workLL;
   Object.assign(cfg,{ytKey:$('iYt').value.trim(),name:$('iName').value.trim(),city:$('iCity').value,home:$('iHome').value.trim(),work:$('iWork').value.trim()});
   saveCfg();renderQuick();renderNav();renderContacts();tickClock();lastPrayKey='';tickPray();heroMedia();toast('تم حفظ الإعدادات ✓')};
@@ -1810,6 +1859,10 @@ let tt;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('sho
     .map(([n,i,c,m])=>`<a href="#" data-media="${m}" class="press" style="--c:${c}"><span class="ic">${svg(I[i])}</span>${n}</a>`).join('')+`<a href="#" class="press" style="--c:#ff6a00" onclick="event.preventDefault();MP.kind?mpToggle():openMedia('music')"><span class="ic">${svg(I.play||I.music)}</span>تشغيل/إيقاف</a>`;})();
 applyAcc();renderPickers();renderQuick();renderNav();renderContacts();tickClock();tickPray();setSpeed(0);startGPS();
 const start=(location.hash||'').slice(1);
+// warm-up after the screen is idle: map engine + favourites mix + offline cache
+setTimeout(()=>{if(hasGL)needML().catch(()=>{});buildMixQuiet()},6000);
+function buildMixQuiet(){if(!MP.mix.fav)favs().forEach(n=>ytRace(n+' أغاني').catch(()=>{}))}
+if('serviceWorker' in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{});
 go(order.includes(start)?start:'home',true);
 setInterval(()=>{tickClock();tickPray();tickTrip();tickDemo()},1000);
 /* sports-car style needle sweep on start-up */
