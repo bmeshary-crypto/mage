@@ -80,6 +80,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .page{position:absolute;inset:0;padding:26px 36px 28px;opacity:0;pointer-events:none;
   transform:translateX(-60px);transition:opacity .45s var(--ease),transform .55s var(--ease)}
 .page.on{opacity:1;pointer-events:auto;transform:none}
+.page:not(.on),.page:not(.on) *{pointer-events:none!important}
 .page.out{opacity:0;transform:translateX(60px)}
 .page h1{font-size:48px;font-weight:900;margin-bottom:22px;display:flex;align-items:center;gap:16px}
 .page h1::before{content:"";width:10px;height:38px;background:var(--acc);transform:skewX(-18deg);box-shadow:0 0 14px var(--accGlow)}
@@ -510,10 +511,61 @@ body.navOn .nSpd{bottom:200px}
 .rng::-webkit-slider-runnable-track{height:14px;background:var(--s3);border-radius:8px}
 .rng::-webkit-slider-thumb{-webkit-appearance:none;width:52px;height:52px;margin-top:-19px;border-radius:50%;background:var(--acc);border:4px solid #000;box-shadow:0 0 14px var(--accGlow)}
 .rng{-webkit-appearance:none;background:none}
+
+/* ===== in-app media ===== */
+.muHead{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:18px}.muHead h1{margin:0}
+.muTabs{display:flex;gap:10px}
+.muTabs button{height:76px;padding:0 30px;font-size:28px;font-weight:900;background:var(--s2);border:1px solid var(--line);clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px)}
+.muTabs button.on{background:var(--acc);color:#000;border-color:var(--acc)}
+.muBody{display:flex;flex-direction:column;gap:14px}
+.muSearch{display:flex;gap:12px}
+.muSearch input,.qrTop select{flex:1;min-width:0;height:84px;padding:0 26px;font:800 28px Tajawal;color:var(--tx);background:var(--s2);border:2px solid var(--line);outline:none}
+.muSearch input:focus{border-color:var(--acc)}.muSearch .btnA{height:84px}
+.nChip.on{background:var(--acc);color:#000}
+.muList{display:flex;flex-direction:column;gap:10px}
+.muItem{display:flex;align-items:center;gap:20px;padding:12px 16px;background:var(--s2);border:1px solid var(--line);text-align:right}
+.muItem.on{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 14%,var(--s2))}
+.muArt{position:relative;width:190px;height:107px;flex:none;background:#000 center/cover;display:grid;place-items:center;color:var(--acc)}
+.muArt svg{width:52px;height:52px}
+.muArt i{position:absolute;left:6px;bottom:6px;background:rgba(0,0,0,.8);font:700 18px Rajdhani;font-style:normal;padding:2px 8px;color:#fff}
+.muTx{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.muTx b{font-size:28px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.muTx small{font-size:21px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.muGo{width:84px;height:84px;flex:none;border-radius:50%;background:var(--acc);color:#000;display:grid;place-items:center}.muGo svg{width:40px;height:40px}
+.qrTop{display:flex;align-items:center;gap:16px}.qrTop label{font-size:28px;font-weight:900;color:var(--mu)}
+.qGrid{display:grid!important;grid-template-columns:repeat(4,1fr);gap:10px}
+.qItem{display:flex;align-items:center;gap:12px;height:86px;padding:0 16px;background:var(--s2);border:1px solid var(--line);font-size:26px;font-weight:800;text-align:right}
+.qItem b{width:52px;height:52px;flex:none;border-radius:50%;background:var(--s3);display:grid;place-items:center;font-size:22px;color:var(--acc)}
+.qItem.on{background:var(--acc);color:#000}.qItem.on b{background:#000}
+/* mini player */
+.mp{position:absolute;right:24px;left:24px;bottom:calc(172px + 12px);z-index:60;display:none;align-items:center;gap:16px;padding:12px 14px;
+  background:rgba(12,13,17,.97);border:1px solid var(--line);border-top:4px solid var(--acc);box-shadow:0 -10px 40px rgba(0,0,0,.6)}
+.tight .mp{bottom:calc(140px + 10px)}
+.mp.on{display:flex;animation:rise .4s var(--ease) both}
+.mpVid{position:relative;width:200px;height:112px;flex:none;background:#000;overflow:hidden}
+#mpYt,.mpVid iframe{position:absolute;inset:0;width:100%!important;height:100%!important;border:0}
+.mpArt{position:absolute;inset:0;background:#15161b center/cover;display:block}
+.mp[data-kind="yt"] .mpArt{display:none}.mp[data-kind="yt"].moving .mpArt{display:block}
+.mp:not([data-kind="yt"]) .mpArt:not([style*="url"])::after{content:"♪";position:absolute;inset:0;display:grid;place-items:center;font-size:60px;color:var(--acc)}
+.mpInfo{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;text-align:right}
+.mpInfo b{font-size:28px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mpInfo small{font-size:20px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mpB{width:80px;height:80px;flex:none;display:grid;place-items:center;background:var(--s3);color:var(--tx);border-radius:50%;font-size:30px}
+.mpB svg{width:36px;height:36px}.mpB.big{width:96px;height:96px;background:var(--acc);color:#000}.mpB.big svg{width:44px;height:44px}
+.mpB.x{width:64px;height:64px;background:none;color:var(--mu)}
+body.mpOn .page{padding-bottom:170px}
+body.mpOn #p-nav{padding-bottom:0}
+body.mpOn #p-nav .nSheet,body.mpOn #p-nav .nWarn{bottom:160px}
+body.mpOn #p-nav .nSpd{bottom:160px}
+body.mpOn.navOn #p-nav .nSpd,body.mpOn.navOn #p-nav .nRoad{bottom:330px}
 </style>
 </head>
 <body>
 <div id="viewport"><div id="stage">
+
+  <!-- ============ MINI PLAYER (stays on every page) ============ -->
+  <div class="mp" id="mp"><div class="mpVid"><div id="mpYt"></div><div class="mpArt" id="mpArt"></div></div>
+    <button class="mpInfo" id="mpInfo"><b id="mpT"></b><small id="mpS"></small></button>
+    <button class="mpB press" id="mpPrev"></button><button class="mpB big press" id="mpPlay"></button><button class="mpB press" id="mpNext"></button><button class="mpB x press" id="mpX">✕</button></div>
 
   <!-- ============ DOCK ============ -->
   <nav class="dock" id="dock">
@@ -678,8 +730,8 @@ body.navOn .nSpd{bottom:200px}
 
       <!-- ===== MEDIA ===== -->
       <div class="page" id="p-media">
-        <h1 class="st" style="--i:0">الوسائط</h1>
-        <div class="grid g4" id="media"></div>
+        <div class="muHead st" style="--i:0"><h1>الوسائط</h1><div class="muTabs" id="muTabs"><button class="press" data-mt="music">موسيقى</button><button class="press" data-mt="radio">راديو</button><button class="press" data-mt="quran">القرآن الكريم</button></div></div>
+        <div class="muBody" id="muBody"></div>
       </div>
 
       <!-- ===== PHONE ===== -->
@@ -856,12 +908,12 @@ function renderQuick(){
   const q=[
     {t:'البيت',s:cfg.home||'حدّد العنوان',i:'home',nk:'home'},
     {t:'العمل',s:cfg.work||'حدّد العنوان',i:'work',nk:'work'},
-    {t:'يوتيوب ميوزك',s:'تشغيل',i:'music',u:'https://music.youtube.com'},
-    {t:'القرآن',s:'استماع',i:'quran',u:'https://quran.com/ar'}
+    {t:'الموسيقى',s:'تشغيل داخل الواجهة',i:'music',md:'music'},
+    {t:'القرآن',s:'استماع',i:'quran',md:'quran'}
   ];
   $('quick').innerHTML=q.map((x,i)=>{
-    const tag=x.u?`a href="${esc(x.u)}" target="_blank" rel="noopener"`:`button data-navk="${x.nk}"`;
-    return `<${tag} class="card qa rp press st" style="--i:${i+4}"><span class="ic">${svg(I[x.i])}</span><span><div class="t">${esc(x.t)}</div><div class="s">${esc(x.s)}</div></span></${x.u?'a':'button'}>`}).join('');
+    const tag=x.md?`button data-media="${x.md}"`:`button data-navk="${x.nk}"`;
+    return `<${tag} class="card qa rp press st" style="--i:${i+4}"><span class="ic">${svg(I[x.i])}</span><span><div class="t">${esc(x.t)}</div><div class="s">${esc(x.s)}</div></span></button>`}).join('');
 }
 function renderNav(){
   const c=[['home','البيت','home'],['work','العمل','work'],['fuel','وقود','fuel'],['mosque','مسجد','mosque'],['coffee','مقهى','coffee'],['food','مطعم','food'],['park','مواقف','park'],['wash','مغسلة','wash']];
@@ -869,16 +921,7 @@ function renderNav(){
 }
 
 /* ================= MEDIA ================= */
-$('media').innerHTML=[
-  {t:'يوتيوب ميوزك',s:'أغانٍ وقوائم',i:'music',c:'#e53935',u:'https://music.youtube.com'},
-  {t:'Spotify',s:'قوائم التشغيل',i:'spot',c:'#1db954',u:'https://open.spotify.com'},
-  {t:'أنغامي',s:'موسيقى عربية',i:'ang',c:'#8e3bff',u:'https://play.anghami.com'},
-  {t:'القرآن الكريم',s:'تلاوات',i:'quran',c:'#c79a2b',u:'https://quran.com/ar'},
-  {t:'بودكاست',s:'برامج صوتية',i:'pod',c:'#ff6a00',u:'https://podcasts.google.com'},
-  {t:'راديو',s:'محطات مباشرة',i:'radio',c:'#2a8cff',u:'https://radio.garden'},
-  {t:'SoundCloud',s:'مقاطع صوتية',i:'sound',c:'#ff5500',u:'https://m.soundcloud.com'},
-  {t:'يوتيوب',s:'عند التوقف فقط',i:'yt',c:'#ff2d2d',u:'https://m.youtube.com'}
-].map((t,i)=>tileHTML(t,i,'sm')).join('');
+
 
 /* ================= PHONE ================= */
 I.user=I.user||'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>';
@@ -1458,6 +1501,115 @@ document.addEventListener('click',e=>{
   else if(a==='clear')clearRes();else if(a==='home'||a==='work')saveAs(a)});
 if(window.speechSynthesis)speechSynthesis.onvoiceschanged=()=>{arVoice=null};
 
+/* ================= MEDIA: in-app player (no page leaves) =================
+   Music = YouTube search → audio-style playback in a persistent mini player (YouTube IFrame API).
+   Radio = radio-browser.info (HTTPS streams only). Quran = mp3quran.net reciters, all 114 surahs.
+   One mini player above the dock stays alive on every page. */
+const SURAS='الفاتحة البقرة آل_عمران النساء المائدة الأنعام الأعراف الأنفال التوبة يونس هود يوسف الرعد إبراهيم الحجر النحل الإسراء الكهف مريم طه الأنبياء الحج المؤمنون النور الفرقان الشعراء النمل القصص العنكبوت الروم لقمان السجدة الأحزاب سبأ فاطر يس الصافات ص الزمر غافر فصلت الشورى الزخرف الدخان الجاثية الأحقاف محمد الفتح الحجرات ق الذاريات الطور النجم القمر الرحمن الواقعة الحديد المجادلة الحشر الممتحنة الصف الجمعة المنافقون التغابن الطلاق التحريم الملك القلم الحاقة المعارج نوح الجن المزمل المدثر القيامة الإنسان المرسلات النبأ النازعات عبس التكوير الانفطار المطففين الانشقاق البروج الطارق الأعلى الغاشية الفجر البلد الشمس الليل الضحى الشرح التين العلق القدر البينة الزلزلة العاديات القارعة التكاثر العصر الهمزة الفيل قريش الماعون الكوثر الكافرون النصر المسد الإخلاص الفلق الناس'.split(' ').map(s=>s.replace('_',' '));
+const RECITERS0=[['مشاري راشد العفاسي','https://server8.mp3quran.net/afs/'],['ماهر المعيقلي','https://server12.mp3quran.net/maher/'],['عبدالرحمن السديس','https://server11.mp3quran.net/sds/'],
+  ['ياسر الدوسري','https://server11.mp3quran.net/yasser/'],['محمد صديق المنشاوي','https://server10.mp3quran.net/minsh/'],['محمود خليل الحصري','https://server13.mp3quran.net/husr/'],
+  ['أحمد العجمي','https://server10.mp3quran.net/ajm/'],['فارس عباد','https://server8.mp3quran.net/frs_a/']].map(([n,s])=>({n,s,l:null}));
+const MU_CHIPS=['أجمل الأغاني العربية','محمد عبده','عبدالمجيد عبدالله','عمرو دياب','شيلات','أناشيد بدون موسيقى','بودكاست','Lo-fi'];
+I.play=I.play||'<path d="M7 4v16l13-8z" fill="currentColor" stroke="none"/>';I.pause=I.pause||'<path d="M7 4h4v16H7zM13 4h4v16h-4z" fill="currentColor" stroke="none"/>';
+I.next=I.next||'<path d="M5 4v16l10-8zM17 4h2v16h-2z" fill="currentColor" stroke="none"/>';I.prev=I.prev||'<path d="M19 4v16L9 12zM5 4h2v16H5z" fill="currentColor" stroke="none"/>';
+const MP={kind:null,list:[],i:-1,playing:false,yt:null,ytReady:null,au:new Audio(),tab:S.get('muTab','music'),rec:S.get('muRec',0),reciters:RECITERS0,radio:null};
+MP.au.preload='none';
+function needYT(){if(MP.ytReady)return MP.ytReady;
+  MP.ytReady=new Promise(ok=>{window.onYouTubeIframeAPIReady=()=>{
+    MP.yt=new YT.Player('mpYt',{host:'https://www.youtube-nocookie.com',width:'100%',height:'100%',playerVars:{autoplay:1,playsinline:1,controls:0,rel:0,modestbranding:1,fs:0},
+      events:{onReady:()=>ok(),onStateChange:e=>{if(MP.kind!=='yt')return;if(e.data===1)mpState(true);else if(e.data===2)mpState(false);else if(e.data===0)mpNext()},
+        onError:()=>{if(MP.kind==='yt'){toast('هذا المقطع لا يسمح بالتشغيل هنا — التالي');setTimeout(mpNext,600)}}}})};
+    loadScript('https://www.youtube.com/iframe_api').catch(()=>{MP.ytReady=null;toast('تعذّر تحميل مشغّل يوتيوب')})});
+  return MP.ytReady}
+function mpState(p){MP.playing=p;$('mp').classList.toggle('play',p);$('mpPlay').innerHTML=svg(p?I.pause:I.play);document.body.classList.toggle('mpLive',p);
+  const t=document.querySelector('.muT b');if(t)t.textContent=p||MP.kind?(MP.list[MP.i]||{}).t||'جاهز للتشغيل':'جاهز للتشغيل'}
+function mpShow(it){$('mp').classList.add('on');document.body.classList.add('mpOn');$('mpT').textContent=it.t||'';$('mpS').textContent=it.s||'';
+  $('mpArt').style.backgroundImage=it.art?`url('${it.art}')`:'';$('mp').dataset.kind=MP.kind;renderMuList()}
+async function mpPlayAt(kind,list,i){
+  if(typeof ytStop==='function'&&$('ytPlayer').classList.contains('on'))ytStop();
+  MP.kind=kind;MP.list=list;MP.i=i;const it=list[i];if(!it)return;mpShow(it);
+  if(kind==='yt'){MP.au.pause();await needYT();MP.yt.loadVideoById(it.id)}
+  else{if(MP.yt&&MP.yt.pauseVideo)try{MP.yt.pauseVideo()}catch(e){}
+    MP.au.src=it.u;MP.au.play().then(()=>mpState(true)).catch(()=>{toast(kind==='radio'?'تعذّر تشغيل هذه المحطة — جرّب غيرها':'تعذّر التشغيل — تحقّق من الإنترنت');mpState(false)})}}
+function mpToggle(){if(!MP.kind)return;
+  if(MP.kind==='yt'){if(!MP.yt)return;MP.playing?MP.yt.pauseVideo():MP.yt.playVideo()}
+  else{if(MP.playing){MP.au.pause();mpState(false)}else MP.au.play().then(()=>mpState(true)).catch(()=>{})}}
+function mpNext(){if(MP.i+1<MP.list.length)mpPlayAt(MP.kind,MP.list,MP.i+1);else mpState(false)}
+function mpPrev(){if(MP.kind==='yt'&&MP.yt&&MP.yt.getCurrentTime&&MP.yt.getCurrentTime()>5){MP.yt.seekTo(0,true);return}
+  if(MP.kind!=='yt'&&MP.au.currentTime>5){MP.au.currentTime=0;return}if(MP.i>0)mpPlayAt(MP.kind,MP.list,MP.i-1)}
+function mpClose(){try{MP.yt&&MP.yt.stopVideo()}catch(e){}MP.au.pause();MP.au.removeAttribute('src');MP.kind=null;mpState(false);$('mp').classList.remove('on');document.body.classList.remove('mpOn');renderMuList()}
+MP.au.onended=()=>{if(MP.kind==='quran')mpNext()};MP.au.onpause=()=>{if(MP.kind!=='yt')mpState(false)};MP.au.onplaying=()=>mpState(true);
+MP.au.onerror=()=>{if(MP.kind&&MP.kind!=='yt'&&MP.au.getAttribute('src')){toast('انقطع البث — جرّب محطة أو تلاوة أخرى');mpState(false)}};
+// pause in-app audio when a full video starts in the YouTube theme
+const _ytPlay=ytPlay;ytPlay=function(id,t){if(MP.kind)mpClose();return _ytPlay(id,t)};
+
+/* ---------- tabs ---------- */
+function openMedia(tab){if(tab)MP.tab=tab;S.set('muTab',MP.tab);go('media');renderMedia()}
+function renderMedia(){document.querySelectorAll('#muTabs button').forEach(b=>b.classList.toggle('on',b.dataset.mt===MP.tab));
+  const box=$('muBody');
+  if(MP.tab==='music'){box.innerHTML=`<form class="muSearch" id="muForm" autocomplete="off"><input id="muQ" placeholder="ابحث عن أغنية، فنان، شيلة، نشيد…" value="${esc(MP.q||'')}"><button class="btnA press" type="submit">بحث</button></form>
+      <div class="nChips">${MU_CHIPS.map(c=>`<button class="nChip press" data-muq="${esc(c)}">${esc(c)}</button>`).join('')}</div><div class="muList" id="muList"></div>`;
+    $('muForm').onsubmit=e=>{e.preventDefault();$('muQ').blur();muSearch($('muQ').value)};
+    if(MP.music)renderMuList();else muSearch(MP.q||MU_CHIPS[0])}
+  else if(MP.tab==='radio'){box.innerHTML=`<form class="muSearch" id="raForm" autocomplete="off"><input id="raQ" placeholder="ابحث عن إذاعة: قرآن، أخبار، MBC، روتانا…" value="${esc(MP.rq||'')}"><button class="btnA press" type="submit">بحث</button></form>
+      <div class="nChips">${['السعودية','القرآن الكريم','أخبار','مصر','الخليج','عربي'].map(c=>`<button class="nChip press" data-raq="${esc(c)}">${esc(c)}</button>`).join('')}</div><div class="muList" id="muList"></div>`;
+    $('raForm').onsubmit=e=>{e.preventDefault();$('raQ').blur();raSearch($('raQ').value)};
+    if(MP.radio)renderMuList();else raSearch(MP.rq||'السعودية')}
+  else{const r=MP.reciters[MP.rec]||MP.reciters[0];
+    box.innerHTML=`<div class="qrTop"><label>القارئ</label><select id="qrSel">${MP.reciters.map((x,i)=>`<option value="${i}" ${i===MP.rec?'selected':''}>${esc(x.n)}</option>`).join('')}</select></div><div class="muList qGrid" id="muList"></div>`;
+    $('qrSel').onchange=e=>{MP.rec=+e.target.value;S.set('muRec',MP.rec);renderMuList()};renderMuList();loadReciters()}}
+function curList(){return MP.tab==='music'?MP.music:MP.tab==='radio'?MP.radio:quranList()}
+function quranList(){const r=MP.reciters[MP.rec]||MP.reciters[0];if(MP._qr===r&&MP._ql)return MP._ql;const ok=r.l&&r.l.length?new Set(r.l):null;MP._qr=r;
+  return MP._ql=SURAS.map((n,k)=>({t:'سورة '+n,s:r.n,u:r.s+String(k+1).padStart(3,'0')+'.mp3',k:k+1})).filter(x=>!ok||ok.has(x.k))}
+function renderMuList(){const el=$('muList');if(!el||cur!=='media')return;const list=curList();
+  const kind=MP.tab==='music'?'yt':MP.tab;
+  if(!list){el.innerHTML='<div class="nrMsg"><span class="spin"></span> جارٍ التحميل…</div>';return}
+  if(!list.length){el.innerHTML='<div class="nrMsg">لا توجد نتائج — جرّب كلمة أخرى</div>';return}
+  const same=MP.kind===kind&&MP.list===list;
+  if(kind==='quran'){el.innerHTML=list.map((x,i)=>`<button class="qItem press ${same&&MP.i===i?'on':''}" data-mi="${i}"><b class="num">${x.k}</b><span>${esc(x.t.replace('سورة ',''))}</span></button>`).join('');return}
+  el.innerHTML=list.map((x,i)=>`<button class="muItem press ${same&&MP.i===i?'on':''}" data-mi="${i}"><span class="muArt" style="${x.art?`background-image:url('${esc(x.art)}')`:''}">${x.art?'':svg(I.radio)}${x.d?`<i>${esc(x.d)}</i>`:''}</span>
+    <span class="muTx"><b>${esc(x.t)}</b><small>${esc(x.s||'')}</small></span><span class="muGo">${svg(same&&MP.i===i&&MP.playing?I.pause:I.play)}</span></button>`).join('')}
+let muSeq=0;
+async function muSearch(q){q=(q||'').trim();if(!q)return;MP.q=q;MP.music=null;renderMuList();const my=++muSeq;
+  document.querySelectorAll('[data-muq]').forEach(b=>b.classList.toggle('on',b.dataset.muq===q));
+  const r=await ytRace(q);if(my!==muSeq)return;
+  MP.music=(r||[]).filter(v=>!v.live).map(v=>({id:v.id,t:v.t,s:v.c||'',art:`https://i.ytimg.com/vi/${v.id}/mqdefault.jpg`,d:fmtDur(v.d)}));
+  if(!r)$('muList')&&($('muList').innerHTML='<div class="nrMsg">تعذّر البحث الآن — حاول مرة أخرى بعد قليل</div>');else renderMuList()}
+async function raSearch(q){q=(q||'').trim();MP.rq=q;MP.radio=null;renderMuList();
+  document.querySelectorAll('[data-raq]').forEach(b=>b.classList.toggle('on',b.dataset.raq===q));
+  const cc={'السعودية':'SA','مصر':'EG'}[q],base='/json/stations/search?hidebroken=true&order=clickcount&reverse=true&limit=80&';
+  const qs=cc?`countrycode=${cc}`:q==='الخليج'?'country=&language=arabic&tag=gulf':q==='عربي'?'language=arabic':q==='القرآن الكريم'?'name=quran':`name=${encodeURIComponent(q)}`;
+  let out=null;
+  for(const h of['https://de1.api.radio-browser.info','https://fi1.api.radio-browser.info','https://de2.api.radio-browser.info','https://nl1.api.radio-browser.info']){
+    try{const j=await navJ(h+base+qs,9000);out=j;break}catch(e){}}
+  if(out&&q==='القرآن الكريم'){try{const j2=await navJ('https://de1.api.radio-browser.info'+base+'tag=quran',9000);out=out.concat(j2)}catch(e){}}
+  const seen=new Set();
+  MP.radio=out?out.filter(s=>/^https:/.test(s.url_resolved||'')&&!seen.has(s.stationuuid)&&seen.add(s.stationuuid))
+    .map(s=>({t:s.name.trim(),s:[s.country,(s.tags||'').split(',').slice(0,2).join('، ')].filter(Boolean).join(' · '),u:s.url_resolved,art:/^https:/.test(s.favicon||'')?s.favicon:''})):[];
+  if(MP.tab==='radio')renderMuList()}
+let recLoaded=false;
+async function loadReciters(){if(recLoaded)return;recLoaded=true;
+  try{const j=await navJ('https://mp3quran.net/api/v3/reciters?language=ar',12000);
+    const list=[];j.reciters.forEach(r=>{const m=(r.moshaf||[]).find(m=>/حفص|مرتل/.test(m.name))||(r.moshaf||[])[0];if(m&&m.server)list.push({n:r.name,s:m.server.replace(/\/?$/,'/'),l:String(m.surah_list||'').split(',').map(Number).filter(Boolean)})});
+    if(list.length>20){const curN=(MP.reciters[MP.rec]||{}).n;const top=RECITERS0.map(x=>list.find(y=>y.n.includes(x.n.split(' ')[0])&&y.n.includes(x.n.split(' ').slice(-1)[0]))||x);
+      MP.reciters=top.concat(list.filter(x=>!top.includes(x)));const k=MP.reciters.findIndex(x=>x.n===curN);MP.rec=k<0?0:k;if(MP.tab==='quran'&&cur==='media')renderMedia()}}
+  catch(e){}}
+// race all YouTube search providers in parallel — first good answer wins (fast even when some servers are down)
+async function ytRace(q){const ps=(await ytProviders(q)).map(p=>p().then(r=>{r=(r||[]).filter(x=>x.id&&x.t);if(!r.length)throw 0;return r}));
+  try{return await Promise.any(ps)}catch(e){return null}}
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-mt]');if(t){MP.tab=t.dataset.mt;S.set('muTab',MP.tab);renderMedia();return}
+  const mq=e.target.closest('[data-muq]');if(mq){$('muQ').value=mq.dataset.muq;muSearch(mq.dataset.muq);return}
+  const rq=e.target.closest('[data-raq]');if(rq){$('raQ').value=rq.dataset.raq;raSearch(rq.dataset.raq);return}
+  const mi=e.target.closest('[data-mi]');if(mi){const list=curList(),i=+mi.dataset.mi,kind=MP.tab==='music'?'yt':MP.tab;
+    if(MP.kind===kind&&MP.list===list&&MP.i===i)mpToggle();else mpPlayAt(kind,list,i);return}
+  const om=e.target.closest('[data-media]');if(om){e.preventDefault();openMedia(om.dataset.media);return}});
+$('mpPrev').innerHTML=svg(I.prev);$('mpNext').innerHTML=svg(I.next);$('mpPlay').innerHTML=svg(I.play);
+$('mpPlay').onclick=mpToggle;$('mpNext').onclick=mpNext;$('mpPrev').onclick=mpPrev;$('mpX').onclick=mpClose;
+$('mpInfo').onclick=()=>openMedia(MP.kind==='yt'?'music':MP.kind||'music');
+setInterval(()=>{$('mp').classList.toggle('moving',(NAV.kmh||0)>=15)},1500);
+
 /* ================= page routing + animations ================= */
 const order=['home','nav','media','phone','pray','set'];let cur=null;
 function go(p,instant){
@@ -1470,6 +1622,7 @@ function go(p,instant){
   const b=document.querySelector(`.dbtn[data-p="${p}"]`);$('ind').style.left=(b.offsetLeft+b.offsetWidth/2-48)+'px';
   if(p==='set')fillForm();
   if(p==='nav')initNav();
+  if(p==='media')renderMedia();
   heroMedia();
   try{history.replaceState(null,'','#'+p)}catch(e){}
 }
@@ -1514,8 +1667,8 @@ let tt;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('sho
   h+=`<line x1="${280+r1*Math.sin(a)}" y1="${280-r1*Math.cos(a)}" x2="${280+r2*Math.sin(a)}" y2="${280-r2*Math.cos(a)}" stroke="${maj?'#f4f4f5':'#4a4c55'}" stroke-width="${maj?6:2}" stroke-linecap="round"/>`}
   $('anTicks').innerHTML=h;
   $('eq').innerHTML=Array.from({length:26},(_,i)=>`<i style="--d:${i};--h:${35+Math.round(60*Math.abs(Math.sin(i*1.7)))}%"></i>`).join('');
-  $('muBtns').innerHTML=[['يوتيوب ميوزك','music','#e53935','https://music.youtube.com'],['Spotify','spot','#1db954','https://open.spotify.com'],['أنغامي','ang','#8e3bff','https://play.anghami.com'],['القرآن','quran','#c79a2b','https://quran.com/ar']]
-    .map(([n,i,c,u])=>`<a href="${u}" target="_blank" rel="noopener" class="press" style="--c:${c}"><span class="ic">${svg(I[i])}</span>${n}</a>`).join('');})();
+  $('muBtns').innerHTML=[['موسيقى','music','#e53935','music'],['راديو','radio','#2a8cff','radio'],['القرآن','quran','#c79a2b','quran']]
+    .map(([n,i,c,m])=>`<a href="#" data-media="${m}" class="press" style="--c:${c}"><span class="ic">${svg(I[i])}</span>${n}</a>`).join('')+`<a href="#" class="press" style="--c:#ff6a00" onclick="event.preventDefault();MP.kind?mpToggle():openMedia('music')"><span class="ic">${svg(I.play||I.music)}</span>تشغيل/إيقاف</a>`;})();
 applyAcc();renderPickers();renderQuick();renderNav();renderContacts();tickClock();tickPray();setSpeed(0);startGPS();
 const start=(location.hash||'').slice(1);
 go(order.includes(start)?start:'home',true);
