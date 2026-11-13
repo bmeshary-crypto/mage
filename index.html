@@ -484,10 +484,9 @@ body.navOn #nMe,body.navOn #nLay{display:none}
 .pinMk{width:64px;height:64px}.pinMk svg{width:100%;height:100%;fill:var(--acc);stroke:#000;stroke-width:1;filter:drop-shadow(0 4px 8px rgba(0,0,0,.6))}
 .nrK{grid-area:k;width:44px;height:44px;border-radius:50%;background:var(--acc);color:#000;display:grid;place-items:center;font-size:22px;font-weight:700;align-self:center}
 .nrI{grid-template-columns:auto 1fr auto!important;grid-template-areas:"k n d" "k a d"!important}
-.nRoad{position:absolute;left:50%;bottom:200px;transform:translateX(-50%);z-index:998;display:none;max-width:70%;padding:12px 30px;background:rgba(10,11,14,.92);border:2px solid var(--acc);
+.nRoad{position:absolute;left:50%;bottom:200px;transition:bottom .3s;transform:translateX(-50%);z-index:998;display:none;max-width:70%;padding:12px 30px;background:rgba(10,11,14,.92);border:2px solid var(--acc);
   border-radius:40px;font-size:28px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 body.navOn .nRoad.on{display:block}
-body.navOn .nSpd{bottom:200px}
 .fRow{display:flex;gap:12px}.fRow input{flex:1;min-width:0}.fRow .btnG{flex:none;height:auto;min-height:72px;font-size:22px;padding:0 20px}
 .fNote{display:block;color:var(--ok,#3ddc84);font-size:18px;margin-top:6px;min-height:4px}
 #p-phone{position:relative}
@@ -564,9 +563,6 @@ body.navOn .nSpd{bottom:200px}
 .mpB.x{width:64px;height:64px;background:none;color:var(--mu)}
 body.mpOn .page{padding-bottom:170px}
 body.mpOn #p-nav{padding-bottom:0}
-body.mpOn #p-nav .nSheet,body.mpOn #p-nav .nWarn{bottom:160px}
-body.mpOn #p-nav .nSpd{bottom:160px}
-body.mpOn.navOn #p-nav .nSpd,body.mpOn.navOn #p-nav .nRoad{bottom:330px}
 
 /* ===== built-in keyboard ===== */
 .vkb{position:absolute;right:0;left:0;bottom:172px;z-index:5000;display:none;flex-direction:column;gap:8px;padding:10px 12px 14px;background:#0a0b0e;border-top:3px solid var(--acc);box-shadow:0 -20px 60px rgba(0,0,0,.7);direction:ltr}
@@ -621,6 +617,26 @@ input[readonly][data-kb]{cursor:text}
 .mixB b{font-size:30px;font-weight:900}.mixB small{font-size:20px;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .mixB.on{outline:3px solid #fff}
 .mpBar{position:absolute;top:-4px;right:0;height:4px;width:0;background:#fff;transition:width 1s linear;z-index:2}
+
+/* ===== navigation: compact panels so the road stays visible ===== */
+body.navOn .nBan{padding:12px 18px;gap:16px;top:12px}
+body.navOn .nbI{width:86px;height:86px}body.navOn .nbI svg{width:68px;height:68px}
+body.navOn .nbT b{font-size:46px}body.navOn .nbT span{font-size:26px}body.navOn .nbT small{font-size:17px}
+body.navOn .nSheet{padding:10px 14px;border-top-width:3px}
+body.navOn .nsLive{gap:8px}
+body.navOn .nsLive>div{padding:6px 12px;flex-direction:row;align-items:baseline;gap:8px;justify-content:center}
+body.navOn .nsLive b{font-size:30px}body.navOn .nsLive small{font-size:15px}
+body.navOn .nsLive .btnR{font-size:22px;padding:0 22px;min-height:56px}
+body.navOn #nZin,body.navOn #nZout{display:none}
+body.navOn .nSide .nBtn{width:76px;min-height:70px}body.navOn .nSide .nBtn svg{width:32px;height:32px}
+body.navOn .nSpd{width:104px;height:104px}body.navOn .nSpd b{font-size:42px}
+body.navOn .nRoad{font-size:24px;padding:8px 24px}
+.nSheet,.nSpd,.nSide{transition:bottom .3s}
+/* mini player slimmer while driving with directions */
+body.navOn .mp{padding:8px 12px;gap:12px}
+body.navOn .mp .mpVid{width:120px;height:68px}
+body.navOn .mp .mpB{width:64px;height:64px}body.navOn .mp .mpB.big{width:76px;height:76px}
+body.navOn .mp .mpInfo b{font-size:23px}body.navOn .mp .mpInfo small{font-size:16px}
 </style>
 </head>
 <body>
@@ -1382,11 +1398,15 @@ setInterval(()=>{if(NAV.mode!=='auto')return;const want=styleFor();[NAV.map,NAV.
 /* ---------- position & camera ---------- */
 function camFor(p,m,mini){const h=m.getContainer().clientHeight;
   if(NAV.active&&NAV.follow){const z=NAV.kmh>90?16:NAV.kmh>55?16.6:17.3;
-    return{center:[p.lng,p.lat],bearing:NAV.hdg,pitch:mini?45:58,zoom:mini?z-.6:z,padding:{top:h*(mini?.25:.42),bottom:0,left:0,right:0}}}
-  if(NAV.follow&&NAV.headUp)   // free drive: map turns with the car, arrow always points forward
-    return{center:[p.lng,p.lat],bearing:NAV.hdg,pitch:mini?30:45,padding:{top:h*(mini?.15:.3),bottom:0,left:0,right:0}};
+    if(mini)return{center:[p.lng,p.lat],bearing:NAV.hdg,pitch:45,zoom:z-.6,padding:{top:h*.25,bottom:0,left:0,right:0}};
+    const t=NAV.padT||0,b=NAV.padB||0,free=Math.max(120,h-t-b);
+    return{center:[p.lng,p.lat],bearing:NAV.hdg,pitch:55,zoom:z,padding:{top:t+free*.45,bottom:b,left:0,right:0}}}
+  if(NAV.follow&&NAV.headUp){  // free drive: map turns with the car, arrow always points forward
+    if(mini)return{center:[p.lng,p.lat],bearing:NAV.hdg,pitch:30,padding:{top:h*.15,bottom:0,left:0,right:0}};
+    const t=NAV.padT||0,b=NAV.padB||0,free=Math.max(120,h-t-b);
+    return{center:[p.lng,p.lat],bearing:NAV.hdg,pitch:45,padding:{top:t+free*.3,bottom:b,left:0,right:0}}}
   return{center:[p.lng,p.lat],bearing:0,pitch:0,padding:{top:0,bottom:0,left:0,right:0}}}
-function drawMe(force){const p=navPos();if(!p||!window.maplibregl)return;
+function drawMe(force){navLayout();const p=navPos();if(!p||!window.maplibregl)return;
   [['map','me'],['hmap','hme']].forEach(([mk,k])=>{const m=NAV[mk];if(!m)return;
     if(!NAV[k])NAV[k]=new maplibregl.Marker({element:carEl(),rotationAlignment:'map',pitchAlignment:'map'}).setLngLat([p.lng,p.lat]).addTo(m);
     else NAV[k].setLngLat([p.lng,p.lat]);NAV[k].setRotation(NAV.hdg)});
@@ -1455,7 +1475,17 @@ async function pickPoint(ll){const r={lat:ll.lat,lng:ll.lng,n:'نقطة على �
     if(NAV.dest===r&&j&&j.display_name){const parts=j.display_name.split(/,\s*/);r.n=j.name||parts[0];r.a=parts.slice(1,3).join('، ');const t=$('nsT');if(t)t.textContent=r.n}}catch(e){}}
 
 /* ---------- route ---------- */
-function sheet(h){const el=$('nSheet');el.innerHTML=h;el.classList.toggle('on',!!h)}
+function sheet(h){const el=$('nSheet');el.innerHTML=h;el.classList.toggle('on',!!h);navLayout()}
+// stack the bottom panels (mini player → trip panel → street name / speed) and tell the camera how much map is really visible
+function navLayout(){const sh=$('nSheet');if(!sh)return;const on=document.body.classList.contains('navOn');
+  const mp=$('mp'),mpH=mp&&mp.classList.contains('on')&&!document.body.classList.contains('kbOn')?mp.offsetHeight+18:0;
+  const shB=mpH+16;sh.style.bottom=shB+'px';$('nWarn').style.bottom=shB+'px';
+  const shH=sh.classList.contains('on')?sh.offsetHeight:0,above=shB+shH+(shH?14:0);
+  document.querySelector('.nSpd').style.bottom=above+'px';$('nRoad').style.bottom=above+'px';
+  const side=document.querySelector('.nSide');if(side){if(on){side.style.top='auto';side.style.bottom=(above+150)+'px'}else{side.style.top='';side.style.bottom=''}}
+  const ban=$('nBan');NAV.padT=on&&ban?ban.offsetHeight+30:(document.querySelector('.nTop')||{}).offsetHeight||0;
+  NAV.padB=above+(on?110:20)}
+setInterval(()=>{if(cur==='nav')navLayout()},800);
 function destBtns(ok,r){return `<div class="nsB">${ok?'<button class="btnA press" data-n="start">ابدأ القيادة</button>':''}
   <button class="btnG press" data-n="home">حفظ كالبيت</button><button class="btnG press" data-n="work">حفظ كالعمل</button>
   <a class="btnG press" href="https://waze.com/ul?ll=${r.lat},${r.lng}&navigate=yes" target="_blank" rel="noopener">Waze</a>
