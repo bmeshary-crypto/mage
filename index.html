@@ -581,6 +581,23 @@ input[readonly][data-kb]{cursor:text}
 .waBox{max-width:760px;margin:20px auto;text-align:center;display:flex;flex-direction:column;gap:18px;font-size:28px;line-height:1.6}
 .waIc{width:120px;height:120px;margin:0 auto;border-radius:30px;background:#25a244;color:#fff;display:grid;place-items:center}.waIc svg{width:70px;height:70px}
 .waBox .btnG{height:80px;display:flex;align-items:center;justify-content:center;font-size:24px}
+
+/* ===== voice search ===== */
+.micB{width:84px;height:84px;flex:none;display:grid;place-items:center;background:var(--s3);color:var(--acc);border:2px solid var(--line)}
+.micB svg{width:42px;height:42px}.micB:active{background:var(--acc);color:#000}
+.ytSearch .micB{height:auto;align-self:stretch}
+.kbMic{height:54px;padding:0 22px;font-size:22px;font-weight:900;background:var(--acc);color:#000;border-radius:10px;display:flex;align-items:center;gap:8px;margin-inline-start:auto;margin-inline-end:12px}
+.kbMic svg{width:28px;height:28px}
+.vo{position:absolute;inset:0;z-index:6000;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center}
+.vo.on{display:flex}
+.voCard{width:760px;max-width:90%;padding:44px 40px;background:#0d0e12;border:1px solid var(--line);border-top:5px solid var(--acc);display:flex;flex-direction:column;align-items:center;gap:26px;animation:rise .3s var(--ease) both}
+.voMic{width:150px;height:150px;border-radius:50%;background:var(--acc);color:#000;display:grid;place-items:center}
+.voMic svg{width:76px;height:76px}
+.vo.listen .voMic{animation:voPulse 1.2s ease-in-out infinite}
+@keyframes voPulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--acc) 60%,transparent)}50%{box-shadow:0 0 0 34px color-mix(in srgb,var(--acc) 0%,transparent)}}
+.voT{font-size:34px;font-weight:800;text-align:center;color:var(--mu);line-height:1.5;min-height:52px}
+.voT.heard{color:var(--tx);font-size:42px}
+.voB{display:flex;gap:14px}.voB button{height:80px;padding:0 34px;font-size:26px}
 </style>
 </head>
 <body>
@@ -592,6 +609,8 @@ input[readonly][data-kb]{cursor:text}
     <button class="mpB press" id="mpPrev"></button><button class="mpB big press" id="mpPlay"></button><button class="mpB press" id="mpNext"></button><button class="mpB x press" id="mpX">✕</button></div>
 
   <div class="vkb" id="vkb"></div>
+  <div class="vo" id="vo"><div class="voCard"><div class="voMic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg></div><div class="voT" id="voT">تكلّم الآن…</div>
+    <div class="voB"><button class="btnA press" id="voRetry">حاول مرة أخرى</button><button class="btnG press" id="voX">إلغاء</button></div></div></div>
 
   <!-- ============ DOCK ============ -->
   <nav class="dock" id="dock">
@@ -668,6 +687,7 @@ input[readonly][data-kb]{cursor:text}
             <form class="ytSearch" id="ytForm">
               <span class="ytLogo"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="4" fill="#ff0033"/><path d="m10 9 5 3-5 3z" fill="#fff"/></svg></span>
               <input id="ytQ" placeholder="ابحث في يوتيوب" autocomplete="off">
+              <button class="micB press" type="button" data-mic="ytQ" title="بحث صوتي"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg></button>
               <button class="btnA press" type="submit">بحث</button>
               <a class="btnS press" href="https://m.youtube.com" rel="noopener" style="display:flex;align-items:center">يوتيوب الكامل</a>
             </form>
@@ -735,6 +755,7 @@ input[readonly][data-kb]{cursor:text}
         <div class="nTop">
           <form class="nSearch" id="navForm" autocomplete="off">
             <input id="navQ" placeholder="إلى أين؟ اسم مكان، مطعم، حي، عنوان…">
+            <button class="micB press" type="button" data-mic="navQ" title="بحث صوتي"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg></button>
             <button class="btnA press" type="submit">بحث</button>
           </form>
           <div class="nChips" id="nChips"></div>
@@ -1157,6 +1178,7 @@ const pending={};
 function onEv(d){
   if(d.t==='cfg')applySync(d.d);
   else if(d.t==='contacts'){PH.book=d.list||[];S.set('phBook',PH.book);if(PH.mode==='book')renderPh()}
+  else if(d.t==='speech'){if(VO.id===d.id){if(d.text)voText(d.text,true);else if(d.s==='ready')voText('🎤 تكلّم الآن…')}}
   else if(d.t==='ack'){if(d.perms)phonePerms=d.perms;const p=pending[d.id];if(p){delete pending[d.id];p(d)}}}
 async function startBridge(code){
   code=(code||'').trim().toLowerCase();if(!/^[a-z0-9]{6,16}$/.test(code))return;
@@ -1175,7 +1197,7 @@ async function startBridge(code){
 }
 function sendCmd(o,ms=9000){return new Promise(async res=>{
   if(!bridge||!bridge.connected||!BK)return res({ok:false,err:'offline'});
-  o.id=Math.random().toString(36).slice(2,10);pending[o.id]=res;
+  o.id=o.id||Math.random().toString(36).slice(2,10);pending[o.id]=res;
   setTimeout(()=>{if(pending[o.id]){delete pending[o.id];res({ok:false,err:'timeout'})}},ms);
   try{bridge.publish(BK.base+'/cmd',await seal(o))}catch(e){delete pending[o.id];res({ok:false,err:'offline'})}})}
 const phoneOnline=()=>Date.now()-bridgeV2At<12000;
@@ -1583,11 +1605,11 @@ const _ytPlay=ytPlay;ytPlay=function(id,t){if(MP.kind)mpClose();return _ytPlay(i
 function openMedia(tab){if(tab)MP.tab=tab;S.set('muTab',MP.tab);go('media');renderMedia()}
 function renderMedia(){document.querySelectorAll('#muTabs button').forEach(b=>b.classList.toggle('on',b.dataset.mt===MP.tab));
   const box=$('muBody');
-  if(MP.tab==='music'){box.innerHTML=`<form class="muSearch" id="muForm" autocomplete="off"><input id="muQ" placeholder="ابحث عن أغنية، فنان، شيلة، نشيد…" value="${esc(MP.q||'')}"><button class="btnA press" type="submit">بحث</button></form>
+  if(MP.tab==='music'){box.innerHTML=`<form class="muSearch" id="muForm" autocomplete="off"><input id="muQ" placeholder="ابحث عن أغنية، فنان، شيلة، نشيد…" value="${esc(MP.q||'')}"><button class="micB press" type="button" data-mic="muQ">${svg(I.mic)}</button><button class="btnA press" type="submit">بحث</button></form>
       <div class="nChips">${MU_CHIPS.map(c=>`<button class="nChip press" data-muq="${esc(c)}">${esc(c)}</button>`).join('')}</div><div class="muList" id="muList"></div>`;
     $('muForm').onsubmit=e=>{e.preventDefault();$('muQ').blur();muSearch($('muQ').value)};
     if(MP.music)renderMuList();else muSearch(MP.q||MU_CHIPS[0])}
-  else if(MP.tab==='radio'){box.innerHTML=`<form class="muSearch" id="raForm" autocomplete="off"><input id="raQ" placeholder="ابحث عن إذاعة: قرآن، أخبار، MBC، روتانا…" value="${esc(MP.rq||'')}"><button class="btnA press" type="submit">بحث</button></form>
+  else if(MP.tab==='radio'){box.innerHTML=`<form class="muSearch" id="raForm" autocomplete="off"><input id="raQ" placeholder="ابحث عن إذاعة: قرآن، أخبار، MBC، روتانا…" value="${esc(MP.rq||'')}"><button class="micB press" type="button" data-mic="raQ">${svg(I.mic)}</button><button class="btnA press" type="submit">بحث</button></form>
       <div class="nChips">${['السعودية','القرآن الكريم','أخبار','مصر','الخليج','عربي'].map(c=>`<button class="nChip press" data-raq="${esc(c)}">${esc(c)}</button>`).join('')}</div><div class="muList" id="muList"></div>`;
     $('raForm').onsubmit=e=>{e.preventDefault();$('raQ').blur();raSearch($('raQ').value)};
     if(MP.radio)renderMuList();else raSearch(MP.rq||'السعودية')}
@@ -1659,7 +1681,7 @@ const kbField=el=>el&&((el.tagName==='INPUT'&&/^(text|search|tel|url|email|)$/.t
 function kbPrep(root){if(!kbOn())return;(root||document).querySelectorAll('input,textarea').forEach(el=>{if(kbField(el)&&!el.dataset.kb){el.dataset.kb=1;el.readOnly=true;el.setAttribute('inputmode','none')}})}
 function kbRender(){const k=$('vkb');if(!k)return;const L=KB.mode==='num'?KB_L.num:KB_L[KB.lang];
   const key=c=>{const v=KB.shift&&KB.lang==='en'&&KB.mode!=='num'?c.toUpperCase():c;return `<button class="kk" data-kk="${esc(v)}">${esc(v)}</button>`};
-  k.innerHTML=`<div class="kbHead"><span id="kbPrev">${esc(KB.t?KB.t.placeholder||'':'')}</span><button class="kbX" data-kc="hide">إخفاء ⌄</button></div>`+
+  k.innerHTML=`<div class="kbHead"><span id="kbPrev">${esc(KB.t?KB.t.placeholder||'':'')}</span><button class="kbMic" data-kc="mic">${svg(I.mic)} بحث صوتي</button><button class="kbX" data-kc="hide">إخفاء ⌄</button></div>`+
     L.map((r,i)=>`<div class="kr">${i===2&&KB.lang==='en'&&KB.mode!=='num'?`<button class="kk fn ${KB.shift?'on':''}" data-kc="shift">⇧</button>`:''}${r.split(' ').map(key).join('')}${i===2?'<button class="kk fn" data-kc="del">⌫</button>':''}</div>`).join('')+
     `<div class="kr"><button class="kk fn" data-kc="mode">${KB.mode==='num'?(KB.lang==='ar'?'أ ب ت':'ABC'):'123'}</button><button class="kk fn" data-kc="lang">${KB.lang==='ar'?'EN':'ع'}</button>
      <button class="kk sp" data-kk=" ">${KB.lang==='ar'?'مسافة':'space'}</button><button class="kk fn" data-kc="clear">مسح</button><button class="kk go" data-kc="enter">${KB.t&&KB.t.tagName==='TEXTAREA'?'سطر جديد':'بحث ⏎'}</button></div>`}
@@ -1683,6 +1705,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('#vkb [data-kk],#
   else if(c==='mode'){KB.mode=KB.mode==='num'?'abc':'num';kbRender()}
   else if(c==='lang'){KB.lang=KB.lang==='ar'?'en':'ar';KB.mode='abc';S.set('kbLang',KB.lang);kbRender()}
   else if(c==='hide')kbClose();
+  else if(c==='mic')voiceInput(el);
   else if(c==='enter'&&el){if(el.tagName==='TEXTAREA'){kbPut(v=>v+'\n');return}
     const f=el.form;kbClose();if(f){f.requestSubmit?f.requestSubmit():f.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true}))}else el.dispatchEvent(new Event('change',{bubbles:true}))}});
 // long-press backspace keeps deleting
@@ -1690,6 +1713,40 @@ let kbRep=null;document.addEventListener('pointerdown',e=>{if(e.target.closest('
 ['pointerup','pointercancel'].forEach(t=>document.addEventListener(t,()=>{clearTimeout(kbRep);clearInterval(kbRep)}));
 new MutationObserver(m=>{if(kbOn())m.forEach(r=>r.addedNodes.forEach(n=>{if(n.nodeType===1)kbPrep(n)}))}).observe(document.body,{childList:true,subtree:true});
 kbPrep();
+
+
+/* ================= voice search =================
+   Car browser mic if it has one (Web Speech) → otherwise the paired phone listens (Android speech recognition)
+   and sends the words back over the encrypted bridge. */
+I.mic=I.mic||'<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/>';
+const VO={id:null,el:null,noWeb:!!window.MageNative};
+function voOpen(el){VO.el=el;$('vo').classList.add('on');$('voT').textContent='تكلّم الآن…';$('voT').classList.remove('heard');$('vo').classList.add('listen');$('voRetry').style.display='none'}
+function voText(t,heard){$('voT').textContent=t;$('voT').classList.toggle('heard',!!heard)}
+function voMsg(t){voText(t);$('vo').classList.remove('listen');$('voRetry').style.display='';VO.id=null}
+function voClose(){$('vo').classList.remove('on','listen');VO.id=null;if(VO.sr)try{VO.sr.abort()}catch(e){}}
+async function voiceInput(el){el=el||kbTarget();if(!el)return;voOpen(el);
+  const lang=KB.lang==='en'?'en-US':'ar-SA';
+  const done=t=>{if(!t)return;el.value=t;el.dispatchEvent(new Event('input',{bubbles:true}));voText(t,true);
+    setTimeout(()=>{voClose();kbClose();const f=el.form;if(f)(f.requestSubmit?f.requestSubmit():f.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true})))},500)};
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(SR&&!VO.noWeb){
+    const res=await new Promise(ok=>{try{const r=new SR();VO.sr=r;r.lang=lang;r.interimResults=true;r.maxAlternatives=1;let fin='';
+      r.onresult=e=>{let t='';for(const x of e.results)t+=x[0].transcript;voText(t,true);if(e.results[e.results.length-1].isFinal)fin=t};
+      r.onerror=e=>ok({err:e.error});r.onend=()=>ok({text:fin});r.start()}catch(e){ok({err:'x'})}});
+    VO.sr=null;if(!$('vo').classList.contains('on'))return;
+    if(res.text)return done(res.text);
+    if(res.err==='no-speech'||(!res.err&&!res.text))return voMsg('لم أسمع شيئاً — اضغط «حاول مرة أخرى»');
+    if(res.err==='aborted')return;
+    VO.noWeb=true}       // the car browser has no usable mic → use the phone
+  if(!phoneOnline())return voMsg('متصفح السيارة لا يملك ميكروفون. شغّل «الربط مع السيارة» في تطبيق MAGE على هاتفك، وهو يستمع لك.');
+  VO.id=Math.random().toString(36).slice(2,10);voText('🎤 هاتفك يستمع… تكلّم الآن');
+  const r=await sendCmd({a:'listen',lang,id:VO.id},20000);
+  if(!$('vo').classList.contains('on'))return;
+  if(r.ok&&r.text)return done(r.text);
+  voMsg({perm:'اسمح للتطبيق بالميكروفون: تطبيق MAGE على الهاتف ← الإعدادات ← «السماح بالاتصال والرسائل»',nomatch:'لم أفهم — حاول مرة أخرى',
+    timeout:'الهاتف لم يستجب — ثبّت آخر نسخة من تطبيق MAGE',offline:PH_ERR.offline,nospeech:'خدمة التعرّف على الصوت غير مفعّلة على الهاتف (تطبيق Google)',unknown:'ثبّت آخر نسخة من تطبيق MAGE على الهاتف'}[r.err]||'تعذّر التعرّف على الصوت، حاول مرة أخرى')}
+document.addEventListener('click',e=>{const m=e.target.closest('[data-mic]');if(m){e.preventDefault();voiceInput($(m.dataset.mic))}});
+$('voX').onclick=voClose;$('voRetry').onclick=()=>voiceInput(VO.el);
 
 /* ================= page routing + animations ================= */
 const order=['home','nav','media','phone','pray','set'];let cur=null;
