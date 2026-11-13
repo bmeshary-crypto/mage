@@ -232,6 +232,7 @@ body.calm *{animation-duration:0s!important;transition-duration:0s!important}
 .home[data-l="minimal"] .clockC,.home[data-l="youtube"] .clockC{display:none}
 .home[data-l="youtube"] .hero,.home[data-l="minimal"] .hero,.home[data-l="glass"] .hero{height:auto;flex:1}
 .home[data-l="youtube"] .homeL,.home[data-l="minimal"] .homeL,.home[data-l="glass"] .homeL{flex:none}
+.home[data-l="youtube"] .homeL{display:none}
 .home[data-l="youtube"] .quick,.home[data-l="minimal"] .quick,.home[data-l="glass"] .quick{height:220px}
 
 /* youtube */
@@ -333,6 +334,47 @@ body.calm *{animation-duration:0s!important;transition-duration:0s!important}
 .gpsCard p{font-size:23px;color:var(--mu);line-height:1.5}
 .gpsRow{display:flex;gap:14px}
 .gpsRow input{flex:1;height:84px;padding:0 24px;font:700 34px Rajdhani;letter-spacing:4px;direction:ltr;text-align:center;color:var(--tx);background:var(--s1);border:2px solid var(--line);border-radius:14px;outline:none}
+
+.ytC{flex-direction:column;padding:22px;gap:14px}
+.ytSearch{display:flex;gap:12px;align-items:center}
+.ytLogo svg{width:58px;height:58px}
+.ytSearch input{flex:1;min-width:0;height:80px;padding:0 24px;font:700 28px Tajawal;color:var(--tx);background:var(--s1);border:2px solid var(--line);border-radius:18px;outline:none}
+.ytSearch input:focus{border-color:var(--acc)}
+.ytSearch .btnA,.ytSearch .btnS{height:80px;border-radius:18px;clip-path:none;padding:0 26px;font-size:25px}
+.ytChips{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;flex:none}
+.ytChips::-webkit-scrollbar{display:none}
+.ytChips button{flex:none;height:58px;padding:0 22px;border-radius:30px;background:var(--s3);font-size:22px;font-weight:800;transition:background .3s}
+.ytChips button.on{background:var(--acc);color:#000}
+.ytPlayer{position:relative;flex:none;aspect-ratio:16/9;border-radius:20px;overflow:hidden;background:#000;display:none}
+.ytPlayer.on{display:block;animation:heroIn .5s var(--ease)}
+.ytPlayer iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.ytBar{position:absolute;left:0;right:0;bottom:0;display:none}
+.ytC.playing .ytBar{display:flex;position:static}
+.ytC.playing .ytPlayer{border-radius:20px 20px 0 0}
+.ytBarWrap{display:none}
+.ytNowRow{display:flex;align-items:center;gap:12px}
+.ytC.playing .ytNowRow{display:flex}
+#ytNowRow{display:none}
+.ytC.playing #ytNowRow{display:flex}
+.ytList{flex:1 1 0;min-height:0;overflow-y:auto;display:flex;flex-wrap:wrap;gap:16px;align-content:flex-start;scrollbar-width:none;padding-bottom:10px}
+.ytList::-webkit-scrollbar{display:none}
+.ytItem{cursor:pointer;flex:none;width:calc(50% - 8px);display:flex;flex-direction:column;gap:10px;text-align:right;background:var(--s2);border-radius:18px;overflow:hidden;padding-bottom:12px;transition:transform .3s var(--spring)}
+.ytItem:active{transform:scale(.96)}
+.ytItem>*{flex:none}
+.ytItem b{min-height:62px}
+.ytThumb{position:relative;aspect-ratio:16/9;background:#111 center/cover no-repeat}
+.ytThumb i{position:absolute;left:10px;bottom:10px;font:700 20px Rajdhani;background:rgba(0,0,0,.8);padding:2px 10px;border-radius:8px;font-style:normal}
+.ytThumb i.live{background:#e5202e}
+.ytItem b{font-size:23px;line-height:1.35;padding:0 14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ytItem span{font-size:19px;color:var(--mu);padding:0 14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ytMsg{width:100%;text-align:center;font-size:26px;color:var(--mu);padding:60px 20px;line-height:1.6}
+.ytMsg .spin{width:60px;height:60px;border:6px solid var(--s3);border-top-color:var(--acc);border-radius:50%;margin:0 auto 18px;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ytBarRow{display:none;align-items:center;gap:12px;background:var(--s2);border-radius:0 0 20px 20px;padding:12px 16px;margin-top:-14px}
+.ytC.playing .ytBarRow{display:flex}
+.ytBarRow #ytNow{flex:1;font-size:22px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ytOpen{font-size:20px;font-weight:800;color:var(--acc)}
+.ytClose{width:52px;height:52px;border-radius:14px;background:var(--s3);font-size:24px}
 </style>
 </head>
 <body>
@@ -408,18 +450,21 @@ body.calm *{animation-duration:0s!important;transition-duration:0s!important}
             </div>
           </div>
 
-          <!-- YouTube live -->
+          <!-- YouTube: search + results + player -->
           <div class="card hv ytC" data-h="youtube">
-            <div class="ytTop"><span class="live"><i></i>مباشر</span><span class="ytT" id="ytTitle">قناة القرآن الكريم</span><button class="btnS press" data-act="set">تغيير القناة</button></div>
-            <div class="ytBox">
-              <iframe id="ytFrame" title="YouTube" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <form class="ytSearch" id="ytForm">
+              <span class="ytLogo"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="4" fill="#ff0033"/><path d="m10 9 5 3-5 3z" fill="#fff"/></svg></span>
+              <input id="ytQ" placeholder="ابحث في يوتيوب" autocomplete="off">
+              <button class="btnA press" type="submit">بحث</button>
+              <a class="btnS press" href="https://m.youtube.com" rel="noopener" style="display:flex;align-items:center">يوتيوب الكامل</a>
+            </form>
+            <div class="ytChips" id="ytChips"></div>
+            <div class="ytPlayer" id="ytPlayer">
+              <iframe id="ytFrame" title="YouTube" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
               <div class="ytLock" id="ytLock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14l-1.5-5h-11zM7 17v3M17 17v3M8 12l1.5-4h5L16 12"/></svg><b>الفيديو متوقف أثناء القيادة</b><span>الصوت مستمر · تعود الصورة تلقائياً عند التوقف</span></div>
             </div>
-            <div class="ytBot">
-              <div><span class="lbl">السرعة</span><b class="num"><span class="x-spd">0</span><small>كم/س</small></b></div>
-              <div><span class="lbl">الوقت</span><b class="num x-time">--:--</b></div>
-              <div><span class="lbl x-np">الصلاة</span><b class="num x-cd">--:--</b></div>
-            </div>
+            <div class="ytBarRow"><span id="ytNow">—</span><a class="ytOpen" id="ytOpen" href="#" rel="noopener">فتح في يوتيوب</a><button class="ytClose press" id="ytClose" type="button">✕</button></div>
+            <div class="ytList" id="ytList"></div>
           </div>
 
           <!-- Live map -->
@@ -534,7 +579,7 @@ body.calm *{animation-duration:0s!important;transition-duration:0s!important}
             </select></div>
           <div class="f st" style="--i:3"><label>عنوان البيت</label><input id="iHome" placeholder="اسم الحي أو العنوان"></div>
           <div class="f st" style="--i:4"><label>عنوان العمل</label><input id="iWork" placeholder="مثال: جدة التاريخية"></div>
-          <div class="f st" style="--i:5"><label>رابط يوتيوب (بث مباشر، فيديو، قائمة تشغيل، أو معرّف قناة)</label><input id="iYt" placeholder="فارغ = قناة القرآن الكريم مباشر من الحرم"></div>
+          <div class="f st" style="--i:5"><label>مفتاح YouTube API (اختياري · يجعل البحث أسرع وأثبت)</label><input id="iYt" placeholder="اتركه فارغاً لاستخدام البحث المفتوح" style="direction:ltr"></div>
           <div class="f st" style="--i:5"><label>GPS الهاتف ← شاشة السيارة</label><div id="gpsBox"></div></div>
           <div class="f st" style="--i:6"><label>&nbsp;</label><div class="tog" id="tDemo"><span>وضع العرض (عدّاد تجريبي)</span><span class="k"></span></div></div>
           <div class="f st" style="--i:7"><label>&nbsp;</label><div class="tog" id="tCalm"><span>إيقاف الحركات (أداء أسرع)</span><span class="k"></span></div></div>
@@ -583,10 +628,8 @@ let lastMapAt=0,lastMapPos=null;
 function heroMedia(){
   const onHome=cur==='home';
   const yf=$('ytFrame'),mf=$('mapFrame');
-  const wantYt=onHome&&cfg.layout==='youtube'?ytSrc(cfg.yt):null;
-  if(wantYt){if(yf.dataset.src!==wantYt){yf.dataset.src=wantYt;yf.src=wantYt}}
-  else if(yf.dataset.src){yf.dataset.src='';yf.src='about:blank'}
-  $('ytTitle').textContent=cfg.yt?'بث يوتيوب المختار':'قناة القرآن الكريم · الحرم المكي';
+  if(onHome&&cfg.layout==='youtube'){if(!ytLoaded){ytLoaded=true;ytSearch(YT_DEFAULT)}}
+  else if(yf.dataset.src){ytStop()}
   if(onHome&&cfg.layout==='map'){
     const c=city(),p=trip.last||{lat:c.lat,lng:c.lng};
     const moved=!lastMapPos||hav(lastMapPos,p)>.4;
@@ -830,6 +873,56 @@ function tickDemo(){if(!cfg.demo)return;demoT+=1;
   const v=70+55*Math.sin(demoT/9)+25*Math.sin(demoT/3.7)+8*Math.random();
   feed(Math.max(0,v),null);trip.dist+=Math.max(0,v)/3600;$('sDist').textContent=trip.dist.toFixed(1);$('gpsHint').textContent='وضع العرض التجريبي'}
 
+/* ================= YouTube search =================
+   Search runs through open YouTube front-ends (Piped / Invidious, auto-discovered),
+   or the official YouTube Data API when the user adds a key. Playback = YouTube embed. */
+const YT_DEFAULT='القرآن الكريم';
+const YT_CHIPS=['القرآن الكريم','بث مباشر','أخبار','رياضة','بودكاست','أناشيد','وثائقي','طبخ'];
+let ytLoaded=false,ytInv=null;
+const PIPED=['https://api.piped.private.coffee','https://pipedapi.kavin.rocks','https://pipedapi.adminforge.de','https://pipedapi.r4fo.com'];
+const fmtDur=s=>{s=+s;if(!(s>0))return'';const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=String(Math.floor(s%60)).padStart(2,'0');return h?`${h}:${String(m).padStart(2,'0')}:${x}`:`${m}:${x}`};
+async function getJSON(u,ms=7000){const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);try{const r=await fetch(u,{signal:c.signal});if(!r.ok)throw 0;return await r.json()}finally{clearTimeout(t)}}
+async function invList(){if(ytInv)return ytInv;ytInv=['https://yt.chocolatemoo53.com'];
+  try{const j=await getJSON('https://api.invidious.io/instances.json?sort_by=health',5000);
+    j.filter(x=>x[1]&&x[1].api&&x[1].cors&&x[1].type==='https').forEach(x=>{if(!ytInv.includes(x[1].uri))ytInv.push(x[1].uri)})}catch(e){}
+  return ytInv}
+async function ytProviders(q){
+  const e=encodeURIComponent(q),list=[];
+  if(cfg.ytKey)list.push(async()=>{const j=await getJSON(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=24&q=${e}&key=${encodeURIComponent(cfg.ytKey)}`);
+    return j.items.map(i=>({id:i.id.videoId,t:i.snippet.title,c:i.snippet.channelTitle,live:i.snippet.liveBroadcastContent==='live'}))});
+  PIPED.forEach(b=>list.push(async()=>{const j=await getJSON(`${b}/search?q=${e}&filter=videos`);
+    return j.items.filter(i=>i.url&&i.url.includes('v=')).map(i=>({id:i.url.split('v=')[1].slice(0,11),t:i.title,c:i.uploaderName,d:i.duration,live:i.duration===-1}))}));
+  (await invList()).slice(0,6).forEach(b=>list.push(async()=>{const j=await getJSON(`${b}/api/v1/search?q=${e}&type=video`);
+    return j.filter(i=>i.videoId).map(i=>({id:i.videoId,t:i.title,c:i.author,d:i.lengthSeconds,live:i.liveNow}))}));
+  return list}
+let ytSeq=0;
+async function ytSearch(q){
+  q=(q||'').trim();if(!q)return;const my=++ytSeq;$('ytQ').value=q;
+  document.querySelectorAll('#ytChips button').forEach(b=>b.classList.toggle('on',b.textContent===q));
+  $('ytList').innerHTML='<div class="ytMsg"><div class="spin"></div>جارٍ البحث…</div>';
+  for(const p of await ytProviders(q)){
+    try{const r=(await p()).filter(x=>x.id&&x.t);if(my!==ytSeq)return;if(r.length){ytRender(r);return}}catch(e){}
+  }
+  if(my!==ytSeq)return;
+  $('ytList').innerHTML=`<div class="ytMsg">تعذّر البحث الآن.<br>جرّب مرة أخرى، أو اضغط <b>يوتيوب الكامل</b>.<br><small>لبحث ثابت دائماً أضف مفتاح YouTube API من الإعدادات.</small></div>`;
+}
+function ytRender(r){
+  $('ytList').innerHTML=r.slice(0,30).map(v=>`<div class="ytItem" role="button" data-id="${esc(v.id)}" data-t="${esc(v.t)}">
+    <div class="ytThumb" style="background-image:url('https://i.ytimg.com/vi/${esc(v.id)}/mqdefault.jpg')">${v.live?'<i class="live">مباشر</i>':(fmtDur(v.d)?`<i>${fmtDur(v.d)}</i>`:'')}</div>
+    <b>${esc(v.t)}</b><span>${esc(v.c||'')}</span></div>`).join('');
+}
+function ytPlay(id,t){
+  const u=`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&playsinline=1&rel=0&modestbranding=1`;
+  const f=$('ytFrame');f.dataset.src=u;f.src=u;$('ytPlayer').classList.add('on');document.querySelector('.ytC').classList.add('playing');
+  $('ytNow').textContent=t||'';$('ytOpen').href=`https://m.youtube.com/watch?v=${id}`;$('ytList').scrollTop=0;
+}
+function ytStop(){const f=$('ytFrame');f.dataset.src='';f.src='about:blank';$('ytPlayer').classList.remove('on');document.querySelector('.ytC').classList.remove('playing')}
+$('ytChips').innerHTML=YT_CHIPS.map(c=>`<button type="button" class="press">${c}</button>`).join('');
+$('ytChips').addEventListener('click',e=>{const b=e.target.closest('button');if(b)ytSearch(b.textContent)});
+$('ytForm').addEventListener('submit',e=>{e.preventDefault();$('ytQ').blur();ytSearch($('ytQ').value)});
+$('ytList').addEventListener('click',e=>{const b=e.target.closest('.ytItem');if(b)ytPlay(b.dataset.id,b.dataset.t)});
+$('ytClose').onclick=ytStop;
+
 /* ================= phone-GPS bridge =================
    In the Android app (phone): shares the phone GPS (native foreground service → MQTT).
    In the car browser: subscribes with the pairing code and drives speed, trip and map. */
@@ -897,7 +990,7 @@ function applyAcc(){const r=document.documentElement.style;const P=PALS[cfg.pal]
   document.body.classList.toggle('calm',!!cfg.calm)}
 function fillForm(){
   $('iName').value=cfg.name;$('iCity').value=cfg.city;$('iHome').value=cfg.home;$('iWork').value=cfg.work;
-  $('iYt').value=cfg.yt||'';renderPickers();renderGpsBox();
+  $('iYt').value=cfg.ytKey||'';renderPickers();renderGpsBox();
   $('tDemo').classList.toggle('on',!!cfg.demo);$('tCalm').classList.toggle('on',!!cfg.calm);
 }
 document.addEventListener('click',e=>{
@@ -908,7 +1001,7 @@ $('thChip').onclick=()=>{const i=LAYS.findIndex(l=>l.k===cfg.layout);cfg.layout=
 $('tDemo').onclick=()=>{cfg.demo=!cfg.demo;$('tDemo').classList.toggle('on',cfg.demo);if(!cfg.demo){setSpeed(0);$('gpsHint').textContent='السرعة من GPS الهاتف'}};
 $('tCalm').onclick=()=>{cfg.calm=!cfg.calm;$('tCalm').classList.toggle('on',cfg.calm);applyAcc()};
 $('saveB').onclick=()=>{
-  Object.assign(cfg,{yt:$('iYt').value.trim(),name:$('iName').value.trim(),city:$('iCity').value,home:$('iHome').value.trim(),work:$('iWork').value.trim()});
+  Object.assign(cfg,{ytKey:$('iYt').value.trim(),name:$('iName').value.trim(),city:$('iCity').value,home:$('iHome').value.trim(),work:$('iWork').value.trim()});
   S.set('cfg',cfg);renderQuick();renderNav();renderContacts();tickClock();lastPrayKey='';tickPray();heroMedia();toast('تم حفظ الإعدادات ✓')};
 $('fsB').onclick=async()=>{try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen()}catch(e){toast('التطبيق يعمل بملء الشاشة تلقائياً')}};
 
