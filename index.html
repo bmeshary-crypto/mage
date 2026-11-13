@@ -375,6 +375,21 @@ body.calm *{animation-duration:0s!important;transition-duration:0s!important}
 .ytBarRow #ytNow{flex:1;font-size:22px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ytOpen{font-size:20px;font-weight:800;color:var(--acc)}
 .ytClose{width:52px;height:52px;border-radius:14px;background:var(--s3);font-size:24px}
+
+/* ---------- responsive height (car browser viewport) ---------- */
+.page{overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}.page::-webkit-scrollbar{display:none}
+.gauge{width:auto!important;height:min(660px,100%)!important;aspect-ratio:1}
+.compact .hero{height:calc(var(--H) * .36)}
+.compact .home{gap:16px}.compact .homeL{gap:16px}
+.compact .mainc{grid-template-rows:110px 1fr}
+.tight .hero{height:calc(var(--H) * .33)}
+.tight #stage,.tight{grid-template-rows:1fr 140px}
+.tight .home .homeL{min-height:max-content}
+.tight .home{height:auto;min-height:100%}
+.home[data-l="youtube"] .hero{min-height:calc(var(--H) - 420px)}
+.tight .home .clockC{display:none}
+.tight .stats{gap:14px}.tight .stats>*{min-height:0;padding-top:14px;padding-bottom:14px}
+.tight .quick{height:auto!important;gap:14px}.tight .qa{padding:14px 22px}
 </style>
 </head>
 <body>
@@ -397,7 +412,7 @@ body.calm *{animation-duration:0s!important;transition-duration:0s!important}
   <div class="mainc">
     <header class="bar">
       <div class="greet" id="greet"></div><div class="blogo">MA<b>GE</b></div>
-      <div class="chips">
+      <div class="chips"><button class="chip press" id="fsBtn" onclick="fsToggle()" title="ملء الشاشة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
         <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3c-3 3-6 4-6 8h12c0-4-3-5-6-8zM5 21V11M19 21V11M3 21h18"/></svg><span id="chipPray">—</span></div>
         <button class="chip thChip press" id="thChip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span id="thName">رياضي</span></button>
         <div class="chip"><span class="dot" id="gpsDot"></span><span id="gpsTxt">GPS</span></div>
@@ -654,7 +669,9 @@ function renderPickers(){
 }
 
 /* ================= scale canvas to screen ================= */
-function fit(){const s=Math.min(innerWidth/1080,innerHeight/1920);$('stage').style.transform=`translate(-50%,-50%) scale(${s})`}
+function fit(){const W=innerWidth,H=innerHeight;let s=Math.min(W/1080,H/1000);const sw=Math.round(W/s),sh=Math.round(H/s);const st=$('stage');st.style.width=sw+'px';st.style.height=sh+'px';st.style.setProperty('--H',sh+'px');st.classList.toggle('compact',sh<1700);st.classList.toggle('tight',sh<1350);st.style.transform=`translate(-50%,-50%) scale(${s})`}
+function fsToggle(){const d=document,e=d.documentElement;try{if(d.fullscreenElement||d.webkitFullscreenElement){(d.exitFullscreen||d.webkitExitFullscreen).call(d)}else{(e.requestFullscreen||e.webkitRequestFullscreen).call(e)}}catch(_){} setTimeout(fit,400)}
+document.addEventListener('fullscreenchange',fit);document.addEventListener('webkitfullscreenchange',fit);
 addEventListener('resize',fit);fit();
 
 /* ================= icons ================= */
