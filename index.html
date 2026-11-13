@@ -33,7 +33,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* ---------- stage (fixed canvas, scaled) ---------- */
 #viewport{position:fixed;inset:0;background:#000;overflow:hidden}
 #stage{width:1080px;height:1920px;position:absolute;left:50%;top:50%;transform-origin:center center;overflow:hidden;direction:ltr;
-  display:grid;grid-template-columns:1fr;grid-template-rows:1fr 172px;grid-template-areas:"main" "dock";
+  display:grid;grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) 172px;grid-template-areas:"main" "dock";
   background:
     radial-gradient(900px 700px at 100% -5%,color-mix(in srgb,var(--acc) 18%,transparent),transparent 60%),
     radial-gradient(900px 700px at 0% 100%,color-mix(in srgb,var(--acc) 10%,transparent),transparent 60%),
@@ -383,7 +383,7 @@ body.calm *{animation-duration:0s!important;transition-duration:0s!important}
 .compact .home{gap:16px}.compact .homeL{gap:16px}
 .compact .mainc{grid-template-rows:110px 1fr}
 .tight .hero{height:calc(var(--H) * .33)}
-.tight #stage,.tight{grid-template-rows:1fr 140px}
+.tight #stage,.tight{grid-template-rows:minmax(0,1fr) 140px}
 .tight .home .homeL{min-height:max-content}
 .tight .home{height:auto;min-height:100%}
 .home[data-l="youtube"] .hero{min-height:calc(var(--H) - 420px)}
@@ -505,6 +505,11 @@ body.navOn .nSpd{bottom:200px}
 #sBody{flex:1;min-height:160px;padding:22px;font:700 30px Tajawal;color:var(--tx);background:var(--s2);border:2px solid var(--line);outline:none;resize:none}
 .sQuick{display:flex;flex-wrap:wrap;gap:10px}
 .sSend{height:100px;font-size:34px}
+
+.rng{width:100%;height:60px;accent-color:var(--acc)}
+.rng::-webkit-slider-runnable-track{height:14px;background:var(--s3);border-radius:8px}
+.rng::-webkit-slider-thumb{-webkit-appearance:none;width:52px;height:52px;margin-top:-19px;border-radius:50%;background:var(--acc);border:4px solid #000;box-shadow:0 0 14px var(--accGlow)}
+.rng{-webkit-appearance:none;background:none}
 </style>
 </head>
 <body>
@@ -732,7 +737,9 @@ body.navOn .nSpd{bottom:200px}
           <div class="f st" style="--i:5"><label>مفتاح YouTube API (اختياري · يجعل البحث أسرع وأثبت)</label><input id="iYt" placeholder="اتركه فارغاً لاستخدام البحث المفتوح" style="direction:ltr"></div>
           <div class="f st" style="--i:5"><label>GPS الهاتف ← شاشة السيارة</label><div id="gpsBox"></div></div>
           <div class="f st" style="--i:6"><label>&nbsp;</label><div class="tog" id="tDemo"><span>وضع العرض (عدّاد تجريبي)</span><span class="k"></span></div></div>
-          <div class="f st" style="--i:7"><label>&nbsp;</label><div class="tog" id="tCalm"><span>إيقاف الحركات (أداء أسرع)</span><span class="k"></span></div></div>
+          <div class="f st" style="--i:7;grid-column:1/-1"><label>رفع الواجهة فوق شريط CarbitLink السفلي <span id="insetL"></span>: <b class="num" id="insetV"></b></label>
+            <input type="range" id="iInset" min="0" max="25" step="1" class="rng"><small class="fNote" style="color:var(--mu)">حرّك المؤشر حتى يظهر شريط الأزرار السفلي كاملاً فوق أزرار CarbitLink — يُحفظ لكل وضع (عادي / ملء الشاشة) على حدة</small></div>
+          <div class="f st" style="--i:8"><label>&nbsp;</label><div class="tog" id="tCalm"><span>إيقاف الحركات (أداء أسرع)</span><span class="k"></span></div></div>
           <div class="f st" style="--i:8"><label>&nbsp;</label><div style="display:flex;gap:16px"><button class="btnA press" id="saveB" style="flex:1">حفظ</button><button class="btnG press" id="fsB">ملء الشاشة</button></div></div>
         </div>
       </div>
@@ -797,7 +804,8 @@ function renderPickers(){
 }
 
 /* ================= scale canvas to screen ================= */
-function fit(){const W=innerWidth,H=innerHeight;let s=Math.min(W/1080,H/1000);const sw=Math.round(W/s),sh=Math.round(H/s);const st=$('stage');st.style.width=sw+'px';st.style.height=sh+'px';st.style.setProperty('--H',sh+'px');st.classList.toggle('compact',sh<1700);st.classList.toggle('tight',sh<1350);st.style.transform=`translate(-50%,-50%) scale(${s})`}
+const isFs=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
+function fit(){const fs=isFs(),pct=fs?(cfg.insetFs??10):(cfg.insetN??0),W=innerWidth,H=Math.round(innerHeight*(1-pct/100));$('stage').style.top=(H/2)+'px';const sl=$('iInset');if(sl&&document.activeElement!==sl){sl.value=pct;$('insetV').textContent=pct+'%';$('insetL').textContent=fs?'(وضع ملء الشاشة)':'(الوضع العادي)'}let s=Math.min(W/1080,H/1000);const sw=Math.round(W/s),sh=Math.round(H/s);const st=$('stage');st.style.width=sw+'px';st.style.height=sh+'px';st.style.setProperty('--H',sh+'px');st.classList.toggle('compact',sh<1700);st.classList.toggle('tight',sh<1350);st.style.transform=`translate(-50%,-50%) scale(${s})`}
 function fsToggle(){const d=document,e=d.documentElement;try{if(d.fullscreenElement||d.webkitFullscreenElement){(d.exitFullscreen||d.webkitExitFullscreen).call(d)}else{(e.requestFullscreen||e.webkitRequestFullscreen).call(e)}}catch(_){} setTimeout(fit,400)}
 document.addEventListener('fullscreenchange',fit);document.addEventListener('webkitfullscreenchange',fit);
 addEventListener('resize',fit);fit();
@@ -1491,6 +1499,7 @@ document.addEventListener('click',e=>{
 $('thChip').onclick=()=>{const i=LAYS.findIndex(l=>l.k===cfg.layout);cfg.layout=LAYS[(i+1)%LAYS.length].k;S.set('cfg',cfg);
   if(cur!=='home')go('home');applyLayout(true);const sw=$('sweep');sw.classList.remove('go');void sw.offsetWidth;sw.classList.add('go')};
 $('tDemo').onclick=()=>{cfg.demo=!cfg.demo;$('tDemo').classList.toggle('on',cfg.demo);if(!cfg.demo){setSpeed(0);$('gpsHint').textContent='السرعة من GPS الهاتف'}};
+$('iInset').oninput=e=>{const v=+e.target.value;if(isFs())cfg.insetFs=v;else cfg.insetN=v;S.set('cfg',cfg);$('insetV').textContent=v+'%';fit()};
 $('tCalm').onclick=()=>{cfg.calm=!cfg.calm;$('tCalm').classList.toggle('on',cfg.calm);applyAcc()};
 $('saveB').onclick=()=>{
   if($('iHome').value.trim()!==cfg.home)delete cfg.homeLL;if($('iWork').value.trim()!==cfg.work)delete cfg.workLL;
