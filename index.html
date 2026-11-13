@@ -396,6 +396,7 @@ body.calm *{animation-duration:0s!important;transition-duration:0s!important}
 .lmap{position:absolute;inset:0;background:#0b0c0f;z-index:0}
 #heroMap{border-radius:inherit}
 .leaflet-container{font-family:Tajawal,sans-serif;background:#0b0c0f}
+.lmap.dark .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(.92) saturate(.55)}
 .leaflet-control-attribution{font-size:13px!important;background:rgba(0,0,0,.55)!important;color:#888!important}
 .leaflet-control-attribution a{color:#aaa!important}
 .carMk{background:none;border:0}
@@ -1043,7 +1044,7 @@ else{try{const q=new URLSearchParams(location.search).get('gps');if(q){cfg.gps=q
    Search: Photon + Nominatim · Nearby: Overpass · Routing: OSRM (two public servers). */
 const NAV={map:null,hmap:null,me:null,hme:null,destM:null,dest:null,route:null,pts:[],lines:[],steps:[],si:1,active:false,follow:true,
   voice:S.get('navVoice',true),sat:false,off:0,lastRoute:0,pos:null,hdg:0,pickMe:false,res:[],resM:null,spoke:{}};
-const TILE_DARK='https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+const TILE_DARK='https://tile.openstreetmap.org/{z}/{x}/{y}.png',TILE_ALT='https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
       TILE_SAT='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
 let leafletP=null;
 function needLeaflet(){if(window.L)return Promise.resolve();
@@ -1062,9 +1063,11 @@ function pinIcon(c){return L.divIcon({className:'pinMk'+(c?' '+c:''),html:'<svg 
 function mkMap(id,mini){
   const p=biasP();
   const m=L.map(id,{zoomControl:false,attributionControl:true,zoomSnap:.5,tap:true}).setView([p.lat,p.lng],mini?15:14);
-  m._base=L.tileLayer(NAV.sat?TILE_SAT:TILE_DARK,{maxZoom:19,subdomains:'abcd',attribution:NAV.sat?'© Esri':'© OpenStreetMap © CARTO'}).addTo(m);
-  m.attributionControl.setPrefix(false);return m}
-function setBase(m){if(!m)return;m._base.setUrl(NAV.sat?TILE_SAT:TILE_DARK)}
+  m._base=L.tileLayer(baseUrl(),{maxZoom:19,attribution:'© OpenStreetMap · Esri'}).addTo(m);
+  let errs=0;m._base.on('tileerror',()=>{if(!NAV.sat&&!NAV.alt&&++errs>4){NAV.alt=true;setBase(NAV.map);setBase(NAV.hmap)}});
+  m.getContainer().classList.toggle('dark',!NAV.sat);m.attributionControl.setPrefix(false);return m}
+const baseUrl=()=>NAV.sat?TILE_SAT:NAV.alt?TILE_ALT:TILE_DARK;
+function setBase(m){if(!m)return;m._base.setUrl(baseUrl());m.getContainer().classList.toggle('dark',!NAV.sat)}
 
 async function initNav(){
   try{await needLeaflet()}catch(e){toast('تعذّر تحميل الخريطة — تحقّق من الإنترنت');return}
