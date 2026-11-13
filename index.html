@@ -697,7 +697,7 @@ body.navOn #nMe,body.navOn #nLay{display:none}
 const S={get(k,d){try{const v=localStorage.getItem('mageS_'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
          set(k,v){try{localStorage.setItem('mageS_'+k,JSON.stringify(v))}catch(e){}}};
 const cfg=Object.assign({name:'',city:'جدة|21.4858|39.1925',home:'',work:'جدة التاريخية',pal:0,layout:'sport',yt:'',nav:'google',demo:false,calm:false,
-  contacts:[{n:'البيت',p:''},{n:'العمل',p:''},{n:'',p:''},{n:'',p:''}]},S.get('cfg',{}));
+  contacts:[{n:'البيت',p:''},{n:'العمل',p:''},{n:'',p:''},{n:'',p:''}]},S.get('cfg',{}));cfg.demo=false;
 const $=id=>document.getElementById(id);
 
 /* ================= themes & palettes ================= */
@@ -941,11 +941,14 @@ function startGPS(){
     navigator.geolocation.watchPosition(p=>{
       gpsOK=true;$('gpsDot').classList.add('live');$('gpsTxt').textContent='GPS متصل';$('gpsHint').textContent='السرعة من GPS الهاتف';
       if(Date.now()-bridgeAt<5000)return;
-      if(!cfg.demo)feed((p.coords.speed||0)*3.6,{lat:p.coords.latitude,lng:p.coords.longitude,hdg:p.coords.heading});
+      realGps();feed(cleanSpd(p.coords.speed,p.coords.accuracy),{lat:p.coords.latitude,lng:p.coords.longitude,hdg:p.coords.heading});
     },()=>{$('gpsTxt').textContent='GPS مغلق';$('gpsHint').textContent='اسمح للتطبيق بالوصول إلى الموقع'},
     {enableHighAccuracy:true,maximumAge:1000,timeout:20000});
   }catch(e){$('gpsTxt').textContent='GPS غير متاح'}
 }
+/* real speed: m/s → km/h, drop GPS jitter when parked and impossible spikes */
+function cleanSpd(ms,acc){ms=+ms;if(!(ms>=0)||ms<0.8||(acc>40&&ms<3))return 0;const k=ms*3.6;return k>260?0:k}
+function realGps(){if(cfg.demo){cfg.demo=false;S.set('cfg',cfg);const t=$('tDemo');if(t)t.classList.remove('on');setSpeed(0);toast('تم إيقاف وضع العرض التجريبي — السرعة الآن حقيقية من GPS')}}
 /* demo mode: smooth simulated drive for showcases */
 let demoT=0;
 function tickDemo(){if(!cfg.demo)return;demoT+=1;
@@ -1016,7 +1019,7 @@ async function startBridge(code){
     bridge.on('connect',()=>{bridge.subscribe(`magesport/${code}/gps`);$('gpsTxt').textContent='بانتظار الهاتف'});
     bridge.on('message',(t,m)=>{try{const d=JSON.parse(m.toString());bridgeAt=Date.now();
       $('gpsDot').classList.add('live');$('gpsTxt').textContent='GPS الهاتف';$('gpsHint').textContent='السرعة من GPS الهاتف';
-      if(!cfg.demo)feed(d.spd>=0?d.spd*3.6:0,{lat:d.lat,lng:d.lng,hdg:d.hdg})}catch(e){}});
+      realGps();feed(cleanSpd(d.spd,d.acc),{lat:d.lat,lng:d.lng,hdg:d.hdg})}catch(e){}});
     bridge.on('offline',()=>{$('gpsDot').classList.remove('live');$('gpsTxt').textContent='GPS غير متصل'});
   }catch(e){toast('تعذّر الاتصال بخدمة GPS')}
 }
