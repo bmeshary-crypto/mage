@@ -637,6 +637,8 @@ body.navOn .mp{padding:8px 12px;gap:12px}
 body.navOn .mp .mpVid{width:120px;height:68px}
 body.navOn .mp .mpB{width:64px;height:64px}body.navOn .mp .mpB.big{width:76px;height:76px}
 body.navOn .mp .mpInfo b{font-size:23px}body.navOn .mp .mpInfo small{font-size:16px}
+
+.muTabs .nfxT{background:var(--s3)}
 </style>
 </head>
 <body>
@@ -816,7 +818,7 @@ body.navOn .mp .mpInfo b{font-size:23px}body.navOn .mp .mpInfo small{font-size:1
 
       <!-- ===== MEDIA ===== -->
       <div class="page" id="p-media">
-        <div class="muHead st" style="--i:0"><h1>الوسائط</h1><div class="muTabs" id="muTabs"><button class="press" data-mt="music">موسيقى</button><button class="press" data-mt="radio">راديو</button><button class="press" data-mt="quran">القرآن الكريم</button></div></div>
+        <div class="muHead st" style="--i:0"><h1>الوسائط</h1><div class="muTabs" id="muTabs"><button class="press" data-mt="music">موسيقى</button><button class="press" data-mt="radio">راديو</button><button class="press" data-mt="quran">القرآن الكريم</button><button class="press nfxT" data-web="netflix">📺 Netflix</button></div></div>
         <div class="muBody" id="muBody"></div>
       </div>
 
@@ -1313,6 +1315,7 @@ document.addEventListener('click',async e=>{
   const k=e.target.closest('[data-k]');if(k){PH.num=k.dataset.k==='del'?PH.num.slice(0,-1):(PH.num+k.dataset.k).slice(0,18);renderPh();return}
   const qt=e.target.closest('[data-qt]');if(qt){$('sBody').value=qt.dataset.qt;return}
   const p=e.target.closest('[data-ph]');if(!p)return;const a=p.dataset.ph;
+  if(a==='wa'&&window.MageNative){e.preventDefault();openWeb('wa');return}
   if(a==='wa'){e.preventDefault();PH.mode='wa';$('phPanel').classList.add('on');$('phTitle').textContent='واتساب';$('phBody').classList.remove('dial');
     $('phBody').innerHTML=`<div class="waBox"><div class="waIc">${svg(I.wa)}</div><p>واتساب يمنع فتح موقعه داخل أي صفحة أخرى (حماية من الشركة نفسها)، فلا يمكن عرضه داخل الواجهة.</p><p>للتواصل وأنت في الواجهة استخدم <b>الاتصال</b> و<b>الرسائل</b> — تعمل عبر هاتفك دون مغادرة الصفحة.</p><a class="btnG press" href="https://web.whatsapp.com">فتح واتساب ويب (يغادر الواجهة)</a></div>`;return}
   if(a==='close')closePh();else if(a==='reload'){PH.book=[];renderPh();loadBook()}
@@ -1827,6 +1830,21 @@ async function voiceInput(el){el=el||kbTarget();if(!el)return;voOpen(el);
     timeout:'الهاتف لم يستجب — ثبّت آخر نسخة من تطبيق MAGE',offline:PH_ERR.offline,nospeech:'خدمة التعرّف على الصوت غير مفعّلة على الهاتف (تطبيق Google)',unknown:'ثبّت آخر نسخة من تطبيق MAGE على الهاتف'}[r.err]||'تعذّر التعرّف على الصوت، حاول مرة أخرى')}
 document.addEventListener('click',e=>{const m=e.target.closest('[data-mic]');if(m){e.preventDefault();voiceInput($(m.dataset.mic))}});
 $('voX').onclick=voClose;$('voRetry').onclick=()=>voiceInput(VO.el);
+
+
+/* ================= Netflix / WhatsApp Web in a full-screen window of the app =================
+   Works when MAGE is installed as an app (car screen or phone). A normal browser page can't show them. */
+const WEBS={netflix:['Netflix','https://www.netflix.com/browse'],wa:['واتساب ويب','https://web.whatsapp.com']};
+function openWeb(k){const w=WEBS[k];if(!w)return;
+  if(window.MageNative){if(MP.kind)mpClose();if(typeof ytStop==='function')ytStop();MageNative.postMessage('web:'+w[1]);return}
+  $('phPanel').classList.add('on');PH.mode='web';$('phTitle').textContent=w[0];$('phBody').classList.remove('dial');
+  $('phBody').innerHTML=`<div class="waBox"><div class="waIc" style="background:var(--s3);font-size:60px">📺</div>
+    <p>${esc(w[0])} لا يعمل داخل متصفح CarbitLink: الموقع يمنع عرضه داخل صفحة أخرى، ويحتاج حماية الفيديو (DRM) التي لا يوفرها هذا المتصفح.</p>
+    <p>يعمل داخل <b>تطبيق MAGE</b> بعد تثبيته على شاشة السيارة (أداة MAGE-ADB)، في نافذة كاملة مع حفظ تسجيل الدخول.</p></div>`;
+  if(cur!=='phone')go('phone')}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-web]');if(b){e.preventDefault();openWeb(b.dataset.web)}});
+// pause any full-screen video while the car is moving (same rule as YouTube)
+let webLock=null;setInterval(()=>{if(!window.MageNative)return;const l=(NAV.kmh||0)>=15;if(l!==webLock){webLock=l;MageNative.postMessage('lock:'+(l?1:0))}},1500);
 
 /* ================= page routing + animations ================= */
 const order=['home','nav','media','phone','pray','set'];let cur=null;
