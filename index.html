@@ -1841,10 +1841,10 @@ $('voX').onclick=voClose;$('voRetry').onclick=()=>voiceInput(VO.el);
 const WEBS={netflix:['Netflix','https://www.netflix.com/browse'],wa:['واتساب ويب','https://web.whatsapp.com']};
 function openWeb(k){const w=WEBS[k];if(!w)return;
   if(window.MageNative){if(MP.kind)mpClose();if(typeof ytStop==='function')ytStop();MageNative.postMessage('web:'+w[1]);return}
-  // browser mode: open the real site in a new tab (it can't be embedded in-page)
+  // browser mode: the site refuses in-page embedding (iframe), so open it full-page
+  // in THIS tab — the CarbitLink browser's own back (<) / home button returns to MAGE.
   if(MP.kind)mpClose();if(typeof ytStop==='function')ytStop();
-  let win=null;try{win=window.open(w[1],'_blank')}catch(e){}
-  if(!win){try{location.href=w[1];return}catch(e){}}
+  try{location.href=w[1]}catch(e){}
   }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-web]');if(b){e.preventDefault();openWeb(b.dataset.web)}});
 // pause any full-screen video while the car is moving (same rule as YouTube)
