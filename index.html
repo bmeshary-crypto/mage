@@ -640,6 +640,10 @@ body.navOn .mp .mpInfo b{font-size:23px}body.navOn .mp .mpInfo small{font-size:1
 
 .muTabs .nfxT{background:var(--s3)}
 </style>
+<script>/* old WebView (car = Chrome 108) has no color-mix(): rewrite to rgba */
+(function(){try{if(window.CSS&&CSS.supports('color','color-mix(in srgb,red 50%,blue)'))return;
+document.documentElement.style.setProperty('--accRGB','255,90,31');
+document.querySelectorAll('style').forEach(function(st){st.textContent=st.textContent.replace(/color-mix\(in srgb,var\(--acc\) (\d+)%,[^)]*\)/g,function(m,p){return 'rgba(var(--accRGB),'+(p/100)+')'})});}catch(e){}})();</script>
 </head>
 <body>
 <div id="viewport"><div id="stage">
@@ -1875,7 +1879,7 @@ document.addEventListener('pointerdown',e=>{if(cfg.calm)return;const el=e.target
 /* ================= settings ================= */
 function applyAcc(){const r=document.documentElement.style;const P=PALS[cfg.pal]||PALS[0];
   r.setProperty('--acc',P.a);r.setProperty('--acc2',P.b);
-  const n=parseInt(P.a.slice(1),16);r.setProperty('--accGlow',`rgba(${n>>16},${n>>8&255},${n&255},.45)`);
+  const n=parseInt(P.a.slice(1),16);r.setProperty('--accGlow',`rgba(${n>>16},${n>>8&255},${n&255},.45)`);r.setProperty('--accRGB',`${n>>16},${n>>8&255},${n&255}`);
   document.body.classList.toggle('calm',!!cfg.calm)}
 function fillForm(){
   $('iName').value=cfg.name;$('iCity').value=cfg.city;$('iHome').value=cfg.home;$('iWork').value=cfg.work;
