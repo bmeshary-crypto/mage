@@ -1841,11 +1841,11 @@ $('voX').onclick=voClose;$('voRetry').onclick=()=>voiceInput(VO.el);
 const WEBS={netflix:['Netflix','https://www.netflix.com/browse'],wa:['واتساب ويب','https://web.whatsapp.com']};
 function openWeb(k){const w=WEBS[k];if(!w)return;
   if(window.MageNative){if(MP.kind)mpClose();if(typeof ytStop==='function')ytStop();MageNative.postMessage('web:'+w[1]);return}
-  $('phPanel').classList.add('on');PH.mode='web';$('phTitle').textContent=w[0];$('phBody').classList.remove('dial');
-  $('phBody').innerHTML=`<div class="waBox"><div class="waIc" style="background:var(--s3);font-size:60px">📺</div>
-    <p>${esc(w[0])} لا يعمل داخل متصفح CarbitLink: الموقع يمنع عرضه داخل صفحة أخرى، ويحتاج حماية الفيديو (DRM) التي لا يوفرها هذا المتصفح.</p>
-    <p>يعمل داخل <b>تطبيق MAGE</b> بعد تثبيته على شاشة السيارة (أداة MAGE-ADB)، في نافذة كاملة مع حفظ تسجيل الدخول.</p></div>`;
-  if(cur!=='phone')go('phone')}
+  // browser mode: open the real site in a new tab (it can't be embedded in-page)
+  if(MP.kind)mpClose();if(typeof ytStop==='function')ytStop();
+  let win=null;try{win=window.open(w[1],'_blank')}catch(e){}
+  if(!win){try{location.href=w[1];return}catch(e){}}
+  }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-web]');if(b){e.preventDefault();openWeb(b.dataset.web)}});
 // pause any full-screen video while the car is moving (same rule as YouTube)
 let webLock=null;setInterval(()=>{if(!window.MageNative)return;const l=(NAV.kmh||0)>=15;if(l!==webLock){webLock=l;MageNative.postMessage('lock:'+(l?1:0))}},1500);
