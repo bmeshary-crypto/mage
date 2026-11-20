@@ -530,6 +530,7 @@ body.navOn .nRoad.on{display:block}
 .muSearch{display:flex;gap:12px}
 .muSearch input,.qrTop select{flex:1;min-width:0;height:84px;padding:0 26px;font:800 28px Tajawal;color:var(--tx);background:var(--s2);border:2px solid var(--line);outline:none}
 .muSearch input:focus{border-color:var(--acc)}.muSearch .btnA{height:84px}
+.scWrap{margin-top:14px}.scF{width:100%;height:440px;border:1px solid var(--line);background:var(--s2)}
 .nChip.on{background:var(--acc);color:#000}
 .muList{display:flex;flex-direction:column;gap:10px}
 .muItem{display:flex;align-items:center;gap:20px;padding:12px 16px;background:var(--s2);border:1px solid var(--line);text-align:right}
@@ -822,7 +823,7 @@ document.querySelectorAll('style').forEach(function(st){st.textContent=st.textCo
 
       <!-- ===== MEDIA ===== -->
       <div class="page" id="p-media">
-        <div class="muHead st" style="--i:0"><h1>الوسائط</h1><div class="muTabs" id="muTabs"><button class="press" data-mt="music">موسيقى</button><button class="press" data-mt="radio">راديو</button><button class="press" data-mt="quran">القرآن الكريم</button><button class="press nfxT" data-web="netflix">📺 Netflix</button></div></div>
+        <div class="muHead st" style="--i:0"><h1>الوسائط</h1><div class="muTabs" id="muTabs"><button class="press" data-mt="music">موسيقى</button><button class="press" data-mt="radio">راديو</button><button class="press" data-mt="quran">القرآن الكريم</button><button class="press" data-mt="sc">☁ ساوند كلاود</button><button class="press nfxT" data-web="netflix">📺 Netflix</button></div></div>
         <div class="muBody" id="muBody"></div>
       </div>
 
@@ -1651,6 +1652,7 @@ function mpShow(it){$('mp').classList.add('on');document.body.classList.add('mpO
   $('mpArt').style.backgroundImage=it.art?`url('${it.art}')`:'';$('mp').dataset.kind=MP.kind;renderMuList()}
 async function mpPlayAt(kind,list,i){
   if(typeof ytStop==='function'&&$('ytPlayer').classList.contains('on'))ytStop();
+  if(typeof scStop==='function')scStop();
   MP.kind=kind;MP.list=list;MP.i=i;const it=list[i];if(!it)return;mpShow(it);
   if(kind==='yt'){MP.au.pause();await needYT();MP.yt.loadVideoById(it.id)}
   else{if(MP.yt&&MP.yt.pauseVideo)try{MP.yt.pauseVideo()}catch(e){}
@@ -1682,6 +1684,10 @@ function renderMedia(){document.querySelectorAll('#muTabs button').forEach(b=>b.
       <div class="nChips">${['السعودية','القرآن الكريم','أخبار','مصر','الخليج','عربي'].map(c=>`<button class="nChip press" data-raq="${esc(c)}">${esc(c)}</button>`).join('')}</div><div class="muList" id="muList"></div>`;
     $('raForm').onsubmit=e=>{e.preventDefault();$('raQ').blur();raSearch($('raQ').value)};
     if(MP.radio)renderMuList();else raSearch(MP.rq||'السعودية')}
+  else if(MP.tab==='sc'){box.innerHTML=`<form class="muSearch" id="scForm" autocomplete="off"><input id="scQ" placeholder="الصق رابط ساوند كلاود، أو اكتب اسم أغنية/فنان" value="${esc(MP.scq||'')}"><button class="micB press" type="button" data-mic="scQ">${svg(I.mic)}</button><button class="btnA press" type="submit">تشغيل</button></form>
+      <div class="nChips">${['رامي جمال','رامي صبري','تامر عاشور','شيلات','أناشيد','ريمكس'].map(c=>`<button class="nChip press" data-scq="${esc(c)}">${esc(c)}</button>`).join('')}</div>
+      <div class="scWrap">${MP.scUrl?scEmbed(MP.scUrl):'<div class="nrMsg">الصق رابط أغنية أو قائمة من ساوند كلاود ليشتغل هنا داخل الواجهة.<br>أو اكتب كلمة ودوس «تشغيل» للبحث في موقع ساوند كلاود.</div>'}</div>`;
+    $('scForm').onsubmit=e=>{e.preventDefault();$('scQ').blur();scGo($('scQ').value)};}
   else{const r=MP.reciters[MP.rec]||MP.reciters[0];
     box.innerHTML=`<div class="qrTop"><label>القارئ</label><select id="qrSel">${MP.reciters.map((x,i)=>`<option value="${i}" ${i===MP.rec?'selected':''}>${esc(x.n)}</option>`).join('')}</select></div><div class="muList qGrid" id="muList"></div>`;
     $('qrSel').onchange=e=>{MP.rec=+e.target.value;S.set('muRec',MP.rec);renderMuList()};renderMuList();loadReciters()}}
@@ -1695,6 +1701,14 @@ async function buildMix(kind,play){const my=++muSeq;MP.q='';const qi=$('muQ');if
     for(let i=0;i<6;i++)lists.forEach(l=>{const x=l[i];if(x&&!seen.has(x.id)){seen.add(x.id);out.push(x)}});
     MP.music=out;if(out.length)MP.mix[kind]={t:Date.now(),l:out}}
   if(my!==muSeq)return;renderMuList();if(play&&MP.music&&MP.music.length)mpPlayAt('yt',MP.music,0)}
+// ---- SoundCloud (official widget, no API key; DRM-free) ----
+function scEmbed(u){const src='https://w.soundcloud.com/player/?url='+encodeURIComponent(u)+'&color=%23ff5a1f&auto_play=true&show_user=true&visual=true';
+  return `<iframe id="scFrame" class="scF" allow="autoplay" frameborder="0" src="${src}"></iframe>`}
+function scStop(){MP.scUrl=null;const f=document.getElementById('scFrame');if(f)try{f.src='about:blank'}catch(e){}}
+function scGo(v){v=(v||'').trim();if(!v)return;MP.scq=v;
+  if(/soundcloud\.com\//i.test(v)){const u=v.startsWith('http')?v:'https://'+v.replace(/^\/+/,'');mpClose();MP.scUrl=u;if(MP.tab==='sc'&&cur==='media')renderMedia();return}
+  // a plain search term → open SoundCloud search on the site (browser back returns)
+  try{location.href='https://soundcloud.com/search?q='+encodeURIComponent(v)}catch(e){}}
 function curList(){return MP.tab==='music'?MP.music:MP.tab==='radio'?MP.radio:quranList()}
 function quranList(){const r=MP.reciters[MP.rec]||MP.reciters[0];if(MP._qr===r&&MP._ql)return MP._ql;const ok=r.l&&r.l.length?new Set(r.l):null;MP._qr=r;
   return MP._ql=SURAS.map((n,k)=>({t:'سورة '+n,s:r.n,u:r.s+String(k+1).padStart(3,'0')+'.mp3',k:k+1})).filter(x=>!ok||ok.has(x.k))}
@@ -1743,6 +1757,7 @@ document.addEventListener('click',e=>{
   const t=e.target.closest('[data-mt]');if(t){MP.tab=t.dataset.mt;S.set('muTab',MP.tab);renderMedia();return}
   const mq=e.target.closest('[data-muq]');if(mq){$('muQ').value=mq.dataset.muq;muSearch(mq.dataset.muq);return}
   const rq=e.target.closest('[data-raq]');if(rq){$('raQ').value=rq.dataset.raq;raSearch(rq.dataset.raq);return}
+  const sq=e.target.closest('[data-scq]');if(sq){scGo(sq.dataset.scq);return}
   const mi=e.target.closest('[data-mi]');if(mi){const list=curList(),i=+mi.dataset.mi,kind=MP.tab==='music'?'yt':MP.tab;
     if(MP.kind===kind&&MP.list===list&&MP.i===i)mpToggle();else mpPlayAt(kind,list,i);return}
   const mx=e.target.closest('[data-mix]');if(mx){buildMix(mx.dataset.mix,true);return}
