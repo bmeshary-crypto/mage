@@ -1684,9 +1684,9 @@ function renderMedia(){document.querySelectorAll('#muTabs button').forEach(b=>b.
       <div class="nChips">${['السعودية','القرآن الكريم','أخبار','مصر','الخليج','عربي'].map(c=>`<button class="nChip press" data-raq="${esc(c)}">${esc(c)}</button>`).join('')}</div><div class="muList" id="muList"></div>`;
     $('raForm').onsubmit=e=>{e.preventDefault();$('raQ').blur();raSearch($('raQ').value)};
     if(MP.radio)renderMuList();else raSearch(MP.rq||'السعودية')}
-  else if(MP.tab==='sc'){box.innerHTML=`<form class="muSearch" id="scForm" autocomplete="off"><input id="scQ" placeholder="الصق رابط ساوند كلاود، أو اكتب اسم أغنية/فنان" value="${esc(MP.scq||'')}"><button class="micB press" type="button" data-mic="scQ">${svg(I.mic)}</button><button class="btnA press" type="submit">تشغيل</button></form>
+  else if(MP.tab==='sc'){box.innerHTML=`<form class="muSearch" id="scForm" autocomplete="off"><input id="scQ" placeholder="اكتب اسم أغنية/فنان ليشتغل هنا، أو الصق رابط ساوند كلاود" value="${esc(MP.scq||'')}"><button class="micB press" type="button" data-mic="scQ">${svg(I.mic)}</button><button class="btnA press" type="submit">تشغيل</button></form>
       <div class="nChips">${['رامي جمال','رامي صبري','تامر عاشور','شيلات','أناشيد','ريمكس'].map(c=>`<button class="nChip press" data-scq="${esc(c)}">${esc(c)}</button>`).join('')}</div>
-      <div class="scWrap">${MP.scUrl?scEmbed(MP.scUrl):'<div class="nrMsg">الصق رابط أغنية أو قائمة من ساوند كلاود ليشتغل هنا داخل الواجهة.<br>أو اكتب كلمة ودوس «تشغيل» للبحث في موقع ساوند كلاود.</div>'}</div>`;
+      <div class="scWrap">${MP.scUrl?scEmbed(MP.scUrl):'<div class="nrMsg">اكتب اسم أغنية أو فنان ودوس «تشغيل» — هيشتغل جوه مشغّل البرنامج على طول.<br>أو الصق رابط أغنية/قائمة من ساوند كلاود ليشتغل هنا بمشغّل ساوند كلاود الرسمي.</div>'}</div>`;
     $('scForm').onsubmit=e=>{e.preventDefault();$('scQ').blur();scGo($('scQ').value)};}
   else{const r=MP.reciters[MP.rec]||MP.reciters[0];
     box.innerHTML=`<div class="qrTop"><label>القارئ</label><select id="qrSel">${MP.reciters.map((x,i)=>`<option value="${i}" ${i===MP.rec?'selected':''}>${esc(x.n)}</option>`).join('')}</select></div><div class="muList qGrid" id="muList"></div>`;
@@ -1706,9 +1706,10 @@ function scEmbed(u){const src='https://w.soundcloud.com/player/?url='+encodeURIC
   return `<iframe id="scFrame" class="scF" allow="autoplay" frameborder="0" src="${src}"></iframe>`}
 function scStop(){MP.scUrl=null;const f=document.getElementById('scFrame');if(f)try{f.src='about:blank'}catch(e){}}
 function scGo(v){v=(v||'').trim();if(!v)return;MP.scq=v;
+  // a SoundCloud link → play it in the official widget, in-page
   if(/soundcloud\.com\//i.test(v)){const u=v.startsWith('http')?v:'https://'+v.replace(/^\/+/,'');mpClose();MP.scUrl=u;if(MP.tab==='sc'&&cur==='media')renderMedia();return}
-  // a plain search term → open SoundCloud search on the site (browser back returns)
-  try{location.href='https://soundcloud.com/search?q='+encodeURIComponent(v)}catch(e){}}
+  // a plain keyword → play in the app's own player (no page leaves)
+  MP.tab='music';S.set('muTab','music');MP.q=v;if(cur!=='media')go('media');renderMedia();muSearch(v)}
 function curList(){return MP.tab==='music'?MP.music:MP.tab==='radio'?MP.radio:quranList()}
 function quranList(){const r=MP.reciters[MP.rec]||MP.reciters[0];if(MP._qr===r&&MP._ql)return MP._ql;const ok=r.l&&r.l.length?new Set(r.l):null;MP._qr=r;
   return MP._ql=SURAS.map((n,k)=>({t:'سورة '+n,s:r.n,u:r.s+String(k+1).padStart(3,'0')+'.mp3',k:k+1})).filter(x=>!ok||ok.has(x.k))}
