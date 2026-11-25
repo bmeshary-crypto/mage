@@ -437,6 +437,13 @@ body.calm *{animation-duration:0s!important;transition-duration:0s!important}
 .ytBarRow{display:none;align-items:center;gap:12px;background:var(--s2);border-radius:0 0 20px 20px;padding:12px 16px;margin-top:-14px}
 .ytC.playing .ytBarRow{display:flex}
 .ytBarRow #ytNow{flex:1;font-size:22px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ytSz{display:flex;gap:8px;flex:none}
+.ytSz button{height:50px;padding:0 16px;border-radius:12px;background:var(--s3);font-size:20px;font-weight:800;color:var(--tx);transition:transform .2s var(--spring)}
+.ytSz button.on{background:var(--acc);color:#000}
+.ytSz button:active{transform:scale(.93)}
+.ytC[data-sz="med"] .ytPlayer{width:62%;margin:0 auto;border-radius:20px!important}
+.ytC[data-sz="med"].playing .ytBarRow{width:62%;margin:8px auto 0;border-radius:14px}
+.ytC[data-sz="full"] .ytPlayer{width:100%}
 .ytOpen{font-size:20px;font-weight:800;color:var(--acc)}
 .ytClose{width:52px;height:52px;border-radius:14px;background:var(--s3);font-size:24px}
 
@@ -796,7 +803,7 @@ document.querySelectorAll('style').forEach(function(st){st.textContent=st.textCo
               <iframe id="ytFrame" title="YouTube" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
               <div class="ytLock" id="ytLock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14l-1.5-5h-11zM7 17v3M17 17v3M8 12l1.5-4h5L16 12"/></svg><b>الفيديو متوقف أثناء القيادة</b><span>الصوت مستمر · تعود الصورة تلقائياً عند التوقف</span></div>
             </div>
-            <div class="ytBarRow"><span id="ytNow">—</span><a class="ytOpen" id="ytOpen" href="#" rel="noopener">فتح في يوتيوب</a><button class="ytClose press" id="ytClose" type="button">✕</button></div>
+            <div class="ytBarRow"><span id="ytNow">—</span><div class="ytSz"><button data-ysz="med" class="press" type="button">◱ متوسط</button><button data-ysz="full" class="press" type="button">⛶ كامل</button></div><a class="ytOpen" id="ytOpen" href="#" rel="noopener">فتح</a><button class="ytClose press" id="ytClose" type="button">✕</button></div>
             <div class="ytList" id="ytList"></div>
           </div>
 
@@ -956,7 +963,7 @@ document.querySelectorAll('style').forEach(function(st){st.textContent=st.textCo
 /* ================= storage ================= */
 const S={get(k,d){try{const v=localStorage.getItem('mageS_'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
          set(k,v){try{localStorage.setItem('mageS_'+k,JSON.stringify(v))}catch(e){}}};
-const cfg=Object.assign({name:'',city:'جدة|21.4858|39.1925',home:'',work:'جدة التاريخية',pal:0,layout:'sport',yt:'',nav:'google',demo:false,calm:false,vidMove:true,
+const cfg=Object.assign({name:'',city:'جدة|21.4858|39.1925',home:'',work:'جدة التاريخية',pal:0,layout:'sport',yt:'',nav:'google',demo:false,calm:false,vidMove:true,ytSize:'med',
   contacts:[{n:'البيت',p:''},{n:'العمل',p:''},{n:'',p:''},{n:'',p:''}]},S.get('cfg',{}));cfg.demo=false;
 const $=id=>document.getElementById(id);
 
@@ -1250,6 +1257,9 @@ $('ytChips').addEventListener('click',e=>{const b=e.target.closest('button');if(
 $('ytForm').addEventListener('submit',e=>{e.preventDefault();$('ytQ').blur();ytSearch($('ytQ').value)});
 $('ytList').addEventListener('click',e=>{const b=e.target.closest('.ytItem');if(b)ytPlay(b.dataset.id,b.dataset.t)});
 $('ytClose').onclick=ytStop;
+function applyYtSize(){const c=document.querySelector('.ytC');if(!c)return;const z=cfg.ytSize||'med';c.dataset.sz=z;c.querySelectorAll('.ytSz button').forEach(b=>b.classList.toggle('on',b.dataset.ysz===z))}
+document.querySelectorAll('.ytSz button').forEach(b=>b.onclick=()=>{cfg.ytSize=b.dataset.ysz;S.set('cfg',cfg);applyYtSize()});
+applyYtSize();
 
 /* ================= phone ⇄ car bridge =================
    Phone (Android app): native foreground service publishes GPS and executes calls / SMS / contacts.
