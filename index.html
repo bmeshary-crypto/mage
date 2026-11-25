@@ -287,6 +287,27 @@ body.calm *{animation-duration:0s!important;transition-duration:0s!important}
 .page.on{transform:none}
 @media (prefers-reduced-motion:reduce){#amb{display:none}}
 
+/* --- sporty crossover backdrop behind the speedometer --- */
+.gaugeC{position:relative;overflow:hidden}
+.gaugeC .gauge,.gaugeC .readout{position:relative;z-index:2}
+.sportBg{position:absolute;left:0;right:0;bottom:0;height:46%;z-index:0;pointer-events:none;overflow:hidden;opacity:.9;
+  -webkit-mask-image:linear-gradient(0deg,#000 62%,transparent);mask-image:linear-gradient(0deg,#000 62%,transparent)}
+.sportBg .carSvg{position:absolute;left:50%;bottom:4%;width:118%;transform:translateX(-50%)}
+.carHead{animation:carHead 3.4s ease-in-out infinite}
+@keyframes carHead{0%,100%{opacity:.6}50%{opacity:1}}
+.carLine{stroke-dasharray:420 1600;stroke-dashoffset:0;animation:carLine 5.5s linear infinite}
+@keyframes carLine{to{stroke-dashoffset:-2020}}
+.sportBg .strk{position:absolute;height:3px;border-radius:3px;left:0;width:34%;
+  background:linear-gradient(90deg,transparent,var(--acc),transparent);opacity:0;will-change:transform,opacity}
+.sportBg .strk:nth-child(1){bottom:30%;animation:strk 2.6s linear infinite .1s}
+.sportBg .strk:nth-child(2){bottom:40%;width:24%;animation:strk 2.1s linear infinite .7s}
+.sportBg .strk:nth-child(3){bottom:52%;width:40%;animation:strk 3s linear infinite 1.2s}
+.sportBg .strk:nth-child(4){bottom:22%;width:28%;animation:strk 2.3s linear infinite 1.7s}
+.sportBg .strk:nth-child(5){bottom:62%;width:20%;animation:strk 2.8s linear infinite .4s}
+@keyframes strk{0%{transform:translateX(-60%);opacity:0}15%{opacity:.7}85%{opacity:.7}100%{transform:translateX(360%);opacity:0}}
+.home[data-l="sport"] .gaugeC .sportBg{display:block}
+@media (prefers-reduced-motion:reduce){.sportBg .strk,.carLine,.carHead{animation:none}}
+
 /* ================= HOME THEMES ================= */
 .hero{position:relative;height:700px;flex:none}
 .hv{position:absolute;inset:0;display:none}
@@ -764,6 +785,29 @@ document.querySelectorAll('style').forEach(function(st){st.textContent=st.textCo
           </div>
           <div class="hero st" id="hero" style="--i:0">
           <div class="card hv gaugeC" data-h="sport">
+            <div class="sportBg" aria-hidden="true">
+              <span class="strk"></span><span class="strk"></span><span class="strk"></span><span class="strk"></span><span class="strk"></span>
+              <svg class="carSvg" viewBox="0 0 1000 320" preserveAspectRatio="xMidYMax meet">
+                <defs>
+                  <linearGradient id="carRim" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="var(--acc)" stop-opacity="0"/><stop offset=".5" stop-color="var(--acc2)"/><stop offset="1" stop-color="var(--acc)" stop-opacity="0"/></linearGradient>
+                  <radialGradient id="carGl" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="var(--acc)" stop-opacity=".5"/><stop offset="1" stop-color="var(--acc)" stop-opacity="0"/></radialGradient>
+                  <linearGradient id="carBd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#26282f"/><stop offset="1" stop-color="#0c0d10"/></linearGradient>
+                  <filter id="cGlow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                </defs>
+                <ellipse cx="500" cy="290" rx="480" ry="28" fill="url(#carGl)"/>
+                <path fill="url(#carBd)" d="M44 240 C34 214 44 152 80 142 L252 128 C360 114 452 110 560 112 C662 114 728 126 780 156 L876 200 C938 210 970 224 956 240 Z"/>
+                <path fill="#07080b" d="M150 176 L270 138 C352 124 440 122 556 124 C634 126 690 136 728 162 L728 176 Z"/>
+                <rect x="418" y="124" width="11" height="52" fill="url(#carBd)"/>
+                <path fill="none" stroke="#2a2c33" stroke-width="5" stroke-linecap="round" d="M254 126 L556 108"/>
+                <path fill="none" stroke="#141519" stroke-width="18" stroke-linecap="round" d="M174 246 a66 66 0 0 1 128 0"/>
+                <path fill="none" stroke="#141519" stroke-width="18" stroke-linecap="round" d="M740 246 a66 66 0 0 1 128 0"/>
+                <circle cx="238" cy="248" r="64" fill="#0a0b0e"/><circle cx="238" cy="248" r="64" fill="none" stroke="var(--acc)" stroke-width="5" stroke-dasharray="170 290" filter="url(#cGlow)"/><circle cx="238" cy="248" r="26" fill="#15161b" stroke="#2a2c33" stroke-width="3"/>
+                <circle cx="804" cy="248" r="64" fill="#0a0b0e"/><circle cx="804" cy="248" r="64" fill="none" stroke="var(--acc)" stroke-width="5" stroke-dasharray="170 290" filter="url(#cGlow)"/><circle cx="804" cy="248" r="26" fill="#15161b" stroke="#2a2c33" stroke-width="3"/>
+                <path class="carLine" fill="none" stroke="url(#carRim)" stroke-width="4" stroke-linecap="round" filter="url(#cGlow)" d="M44 240 C34 214 44 152 80 142 L252 128 C360 114 452 110 560 112 C662 114 728 126 780 156 L876 200 C938 210 970 224 956 240"/>
+                <ellipse class="carHead" cx="924" cy="216" rx="24" ry="12" fill="var(--acc)" filter="url(#cGlow)"/>
+                <rect x="54" y="190" width="14" height="30" rx="5" fill="var(--acc)" opacity=".75"/>
+              </svg>
+            </div>
             <div class="gauge">
               <svg viewBox="0 0 600 600" id="gsvg">
                 <defs>
@@ -1241,13 +1285,19 @@ async function ytSearch(q){
   const rr=await ytRace(q);if(my!==ytSeq)return;if(rr&&rr.length){ytRender(rr);return}
   $('ytList').innerHTML=`<div class="ytMsg">تعذّر البحث الآن.<br>جرّب مرة أخرى، أو اضغط <b>يوتيوب الكامل</b>.<br><small>لبحث ثابت دائماً أضف مفتاح YouTube API من الإعدادات.</small></div>`;
 }
+let ytCur=[];
 function ytRender(r){
+  ytCur=r.slice(0,30);
   $('ytList').innerHTML=r.slice(0,30).map(v=>`<div class="ytItem" role="button" data-id="${esc(v.id)}" data-t="${esc(v.t)}">
     <div class="ytThumb" style="background-image:url('https://i.ytimg.com/vi/${esc(v.id)}/mqdefault.jpg')">${v.live?'<i class="live">مباشر</i>':(fmtDur(v.d)?`<i>${fmtDur(v.d)}</i>`:'')}</div>
     <b>${esc(v.t)}</b><span>${esc(v.c||'')}</span></div>`).join('');
 }
 function ytPlay(id,t){
-  const u=`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&playsinline=1&rel=0&modestbranding=1`;
+  // continue automatically through the suggested results (YouTube-style autoplay-next)
+  const ix=ytCur.findIndex(v=>v.id===id);
+  let next=[];if(ix>=0)next=ytCur.slice(ix+1).concat(ytCur.slice(0,ix)).map(v=>v.id).filter(x=>x&&x!==id).slice(0,24);
+  const pl=next.length?`&playlist=${next.join(',')}`:'';
+  const u=`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&playsinline=1&rel=0&modestbranding=1${pl}`;
   const f=$('ytFrame');f.dataset.src=u;f.src=u;$('ytPlayer').classList.add('on');document.querySelector('.ytC').classList.add('playing');
   $('ytNow').textContent=t||'';$('ytOpen').href=`https://m.youtube.com/watch?v=${id}`;$('ytList').scrollTop=0;
 }
