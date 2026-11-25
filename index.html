@@ -290,9 +290,12 @@ body.calm *{animation-duration:0s!important;transition-duration:0s!important}
 /* --- sporty crossover backdrop behind the speedometer --- */
 .gaugeC{position:relative;overflow:hidden}
 .gaugeC .gauge,.gaugeC .readout{position:relative;z-index:2}
-.sportBg{position:absolute;left:0;right:0;bottom:0;height:46%;z-index:0;pointer-events:none;overflow:hidden;opacity:.9;
-  -webkit-mask-image:linear-gradient(0deg,#000 62%,transparent);mask-image:linear-gradient(0deg,#000 62%,transparent)}
-.sportBg .carSvg{position:absolute;left:50%;bottom:4%;width:118%;transform:translateX(-50%)}
+.sportBg{position:absolute;left:0;right:0;bottom:0;height:64%;z-index:0;pointer-events:none;overflow:hidden;
+  background:url('img/mage-hero.webp') center bottom/cover no-repeat;
+  -webkit-mask-image:linear-gradient(0deg,#000 66%,transparent);mask-image:linear-gradient(0deg,#000 66%,transparent);
+  animation:heroKen 22s ease-in-out infinite alternate}
+@keyframes heroKen{from{transform:scale(1)}to{transform:scale(1.07)}}
+.sportBg .carSvg{display:none}
 .carHead{animation:carHead 3.4s ease-in-out infinite}
 @keyframes carHead{0%,100%{opacity:.6}50%{opacity:1}}
 .carLine{stroke-dasharray:420 1600;stroke-dashoffset:0;animation:carLine 5.5s linear infinite}
