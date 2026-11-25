@@ -941,6 +941,7 @@ document.querySelectorAll('style').forEach(function(st){st.textContent=st.textCo
             <input type="range" id="iInset" min="0" max="25" step="1" class="rng"><small class="fNote" style="color:var(--mu)">حرّك المؤشر حتى يظهر شريط الأزرار السفلي كاملاً فوق أزرار CarbitLink — يُحفظ لكل وضع (عادي / ملء الشاشة) على حدة</small></div>
           <div class="f st" style="--i:8"><label>&nbsp;</label><div class="tog" id="tVkb"><span>لوحة المفاتيح الداخلية (بدل لوحة الهاتف)</span><span class="k"></span></div></div>
           <div class="f st" style="--i:9"><label>&nbsp;</label><div class="tog" id="tCalm"><span>إيقاف الحركات (أداء أسرع)</span><span class="k"></span></div></div>
+          <div class="f st" style="--i:9"><label>&nbsp;</label><div class="tog" id="tVid"><span>تشغيل الفيديو أثناء الحركة (للركاب الخلفيين)</span><span class="k"></span></div></div>
           <div class="f st" style="--i:8"><label>&nbsp;</label><div style="display:flex;gap:16px"><button class="btnA press" id="saveB" style="flex:1">حفظ</button><button class="btnG press" id="fsB">ملء الشاشة</button></div></div>
         </div>
       </div>
@@ -955,7 +956,7 @@ document.querySelectorAll('style').forEach(function(st){st.textContent=st.textCo
 /* ================= storage ================= */
 const S={get(k,d){try{const v=localStorage.getItem('mageS_'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
          set(k,v){try{localStorage.setItem('mageS_'+k,JSON.stringify(v))}catch(e){}}};
-const cfg=Object.assign({name:'',city:'جدة|21.4858|39.1925',home:'',work:'جدة التاريخية',pal:0,layout:'sport',yt:'',nav:'google',demo:false,calm:false,
+const cfg=Object.assign({name:'',city:'جدة|21.4858|39.1925',home:'',work:'جدة التاريخية',pal:0,layout:'sport',yt:'',nav:'google',demo:false,calm:false,vidMove:true,
   contacts:[{n:'البيت',p:''},{n:'العمل',p:''},{n:'',p:''},{n:'',p:''}]},S.get('cfg',{}));cfg.demo=false;
 const $=id=>document.getElementById(id);
 
@@ -1169,7 +1170,7 @@ function setSpeed(k){
   $('needle').style.transform=`rotate(${(SWEEP*k/MAXS)-135}deg)`;
   $('prog').style.strokeDasharray=`${progLen*k/MAXS} ${progLen}`;
   setX('x-spd',String(Math.round(k)));$('wSpd').style.width=(k/MAXS*100)+'%';
-  $('ytLock').classList.toggle('on',k>=15);
+  $('ytLock').classList.toggle('on',k>=15&&!cfg.vidMove);
 }
 
 /* ================= trip computer (GPS) ================= */
@@ -1820,7 +1821,7 @@ document.addEventListener('click',e=>{
 $('mpPrev').innerHTML=svg(I.prev);$('mpNext').innerHTML=svg(I.next);$('mpPlay').innerHTML=svg(I.play);
 $('mpPlay').onclick=mpToggle;$('mpNext').onclick=mpNext;$('mpPrev').onclick=mpPrev;$('mpX').onclick=mpClose;
 $('mpInfo').onclick=()=>openMedia(MP.kind==='yt'?'music':MP.kind||'music');
-setInterval(()=>{$('mp').classList.toggle('moving',(NAV.kmh||0)>=15)},1500);
+setInterval(()=>{$('mp').classList.toggle('moving',(NAV.kmh||0)>=15&&!cfg.vidMove)},1500);
 setInterval(()=>{if(!MP.kind||!MP.playing)return;let c=0,d=0;
   try{if(MP.kind==='yt'&&MP.yt&&MP.yt.getCurrentTime){c=MP.yt.getCurrentTime();d=MP.yt.getDuration()}else{c=MP.au.currentTime;d=MP.au.duration}}catch(e){}
   $('mpBar').style.width=(d>0&&isFinite(d)?Math.min(100,c/d*100):0)+'%'},1000);
@@ -1918,7 +1919,7 @@ function openWeb(k){const w=WEBS[k];if(!w)return;
   }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-web]');if(b){e.preventDefault();openWeb(b.dataset.web)}});
 // pause any full-screen video while the car is moving (same rule as YouTube)
-let webLock=null;setInterval(()=>{if(!window.MageNative)return;const l=(NAV.kmh||0)>=15;if(l!==webLock){webLock=l;MageNative.postMessage('lock:'+(l?1:0))}},1500);
+let webLock=null;setInterval(()=>{if(!window.MageNative)return;const l=(NAV.kmh||0)>=15&&!cfg.vidMove;if(l!==webLock){webLock=l;MageNative.postMessage('lock:'+(l?1:0))}},1500);
 
 /* ================= page routing + animations ================= */
 const order=['home','nav','media','phone','pray','set'];let cur=null;
@@ -1954,7 +1955,7 @@ function applyAcc(){const r=document.documentElement.style;const P=PALS[cfg.pal]
 function fillForm(){
   $('iName').value=cfg.name;$('iCity').value=cfg.city;$('iHome').value=cfg.home;$('iWork').value=cfg.work;
   $('iYt').value=cfg.ytKey||'';$('iFav').value=favs().join('، ');$('hNote').textContent=cfg.homeLL?'✓ موقع محفوظ بالضبط على الخريطة':'';$('wNote').textContent=cfg.workLL?'✓ موقع محفوظ بالضبط على الخريطة':'';renderPickers();renderGpsBox();
-  $('tDemo').classList.toggle('on',!!cfg.demo);$('tCalm').classList.toggle('on',!!cfg.calm);
+  $('tDemo').classList.toggle('on',!!cfg.demo);$('tCalm').classList.toggle('on',!!cfg.calm);$('tVid').classList.toggle('on',cfg.vidMove!==false);
 }
 document.addEventListener('click',e=>{
   const t=e.target.closest('.th');if(t){cfg.layout=t.dataset.k;S.set('cfg',cfg);applyLayout(true);toast('الثيم: '+$('thName').textContent);return}
@@ -1965,6 +1966,9 @@ $('tDemo').onclick=()=>{cfg.demo=!cfg.demo;$('tDemo').classList.toggle('on',cfg.
 $('iInset').oninput=e=>{const v=+e.target.value;if(isFs())cfg.insetFs=v;else cfg.insetN=v;S.set('cfg',cfg);$('insetV').textContent=v+'%';fit()};
 $('tVkb').classList.toggle('on',cfg.vkb!==false);$('tVkb').onclick=()=>{cfg.vkb=cfg.vkb===false;S.set('cfg',cfg);toast('جارٍ إعادة التحميل…');setTimeout(()=>location.reload(),600)};
 $('tCalm').onclick=()=>{cfg.calm=!cfg.calm;$('tCalm').classList.toggle('on',cfg.calm);applyAcc()};
+$('tVid').onclick=()=>{cfg.vidMove=cfg.vidMove===false;$('tVid').classList.toggle('on',cfg.vidMove);S.set('cfg',cfg);
+  if(cfg.vidMove){$('ytLock').classList.remove('on');$('mp').classList.remove('moving');if(window.MageNative){webLock=false;MageNative.postMessage('lock:0')}}
+  toast(cfg.vidMove?'الفيديو سيعمل أثناء الحركة':'الفيديو سيتوقف أثناء الحركة')};
 $('saveB').onclick=()=>{
   {const f=$('iFav').value.split(/[،,]/).map(x=>x.trim()).filter(Boolean);if(f.join()!==favs().join()){cfg.favArtists=f;MP.mix={};MP.music=null}}
   if($('iHome').value.trim()!==cfg.home)delete cfg.homeLL;if($('iWork').value.trim()!==cfg.work)delete cfg.workLL;
