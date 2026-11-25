@@ -234,6 +234,59 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 body.calm *{animation-duration:0s!important;transition-duration:0s!important}
 @media (prefers-reduced-motion:reduce){*{animation-duration:0s!important;transition-duration:.01s!important}}
 
+/* ============================================================
+   PRO POLISH + MOTION LAYER  (added on top; GPU-cheap)
+   ============================================================ */
+#viewport{animation:vpIn .9s var(--ease) both}
+@keyframes vpIn{from{opacity:0}}
+.mainc{z-index:1}
+
+/* --- living ambient background (drifting warm aurora) --- */
+#amb{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+#amb i{position:absolute;border-radius:50%;mix-blend-mode:screen;will-change:transform;opacity:.5}
+#amb i:nth-child(1){width:980px;height:980px;top:-320px;right:-220px;background:radial-gradient(circle,rgba(255,90,31,.55),transparent 62%);animation:amb1 36s var(--ease) infinite alternate}
+#amb i:nth-child(2){width:1120px;height:1120px;bottom:-360px;left:-260px;background:radial-gradient(circle,rgba(255,146,74,.42),transparent 62%);animation:amb2 48s var(--ease) infinite alternate}
+#amb i:nth-child(3){width:760px;height:760px;top:38%;left:26%;opacity:.35;background:radial-gradient(circle,rgba(86,150,255,.30),transparent 60%);animation:amb3 42s var(--ease) infinite alternate}
+#amb u{position:absolute;inset:0;background:radial-gradient(135% 95% at 50% -5%,transparent 56%,rgba(0,0,0,.6) 100%)}
+@keyframes amb1{to{transform:translate(-130px,170px) scale(1.16)}}
+@keyframes amb2{to{transform:translate(170px,-130px) scale(1.22)}}
+@keyframes amb3{to{transform:translate(-110px,-90px) scale(1.12);opacity:.6}}
+
+/* --- deeper, more professional cards --- */
+.card{box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 24px 60px -30px rgba(0,0,0,.85),0 3px 0 rgba(0,0,0,.35)}
+
+/* --- premium primary button: glow + travelling sheen --- */
+.btnA{position:relative;overflow:hidden;box-shadow:0 12px 34px -12px var(--accGlow),inset 0 1px 0 rgba(255,255,255,.35)}
+.btnA::after{content:"";position:absolute;top:0;bottom:0;left:0;width:55%;pointer-events:none;will-change:transform;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);animation:btnSheen 5s var(--ease) infinite}
+@keyframes btnSheen{0%{transform:translateX(-220%) skewX(-20deg)}58%,100%{transform:translateX(420%) skewX(-20deg)}}
+
+/* --- dock: breathing indicator + floating active icon --- */
+.dock .ind{animation:indPulse 2.8s ease-in-out infinite}
+@keyframes indPulse{0%,100%{box-shadow:0 0 18px var(--accGlow),0 0 4px var(--acc)}50%{box-shadow:0 0 34px var(--accGlow),0 0 11px var(--acc)}}
+.dbtn.on svg{animation:dFloat 3.2s ease-in-out infinite}
+@keyframes dFloat{0%,100%{transform:scale(1.12) translateY(0)}50%{transform:scale(1.12) translateY(-6px)}}
+
+/* --- page heading accent: soft pulse + animated divider --- */
+.page h1::before{animation:accPulse 3s ease-in-out infinite}
+@keyframes accPulse{0%,100%{box-shadow:0 0 14px var(--accGlow)}50%{box-shadow:0 0 28px var(--accGlow),0 0 9px var(--acc)}}
+.bar::after{background:linear-gradient(90deg,transparent,var(--acc) 50%,transparent);background-size:220% 100%;opacity:.5;animation:barSh 7s linear infinite}
+@keyframes barSh{to{background-position:-220% 0}}
+
+/* --- speed readout glow --- */
+.gauge .spd{text-shadow:0 0 34px var(--accGlow)}
+
+/* --- chips lift on press --- */
+.chip{transition:transform .25s var(--spring),border-color .3s var(--ease)}
+.chip:active{transform:scale(.96)}
+
+/* --- smoother, slightly cinematic page swap --- */
+.page{transition:opacity .5s var(--ease),transform .6s var(--spring)}
+.page{transform:translateX(-54px) scale(.99)}
+.page.out{transform:translateX(54px) scale(.99)}
+.page.on{transform:none}
+@media (prefers-reduced-motion:reduce){#amb{display:none}}
+
 /* ================= HOME THEMES ================= */
 .hero{position:relative;height:700px;flex:none}
 .hv{position:absolute;inset:0;display:none}
@@ -648,6 +701,7 @@ document.querySelectorAll('style').forEach(function(st){st.textContent=st.textCo
 </head>
 <body>
 <div id="viewport"><div id="stage">
+  <div id="amb" aria-hidden="true"><i></i><i></i><i></i><u></u></div>
 
   <!-- ============ MINI PLAYER (stays on every page) ============ -->
   <div class="mp" id="mp"><i class="mpBar" id="mpBar"></i><div class="mpVid"><div id="mpYt"></div><div class="mpArt" id="mpArt"></div></div>
